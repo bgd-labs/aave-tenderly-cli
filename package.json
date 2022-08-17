@@ -1,0 +1,23 @@
+{
+  "name": "misc-scripts",
+  "version": "1.0.0",
+  "description": "",
+  "main": "tenderly-deploy.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bgd-labs/misc-scripts.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bgd-labs/misc-scripts/issues"
+  },
+  "homepage": "https://github.com/bgd-labs/misc-scripts#readme",
+  "dependencies": {
+    "ethers": "^5.6.9"
+  }
+}
