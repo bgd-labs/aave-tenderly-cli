@@ -5,7 +5,7 @@
   "main": "scripts/tenderly-deploy.js",
   "type": "module",
   "scripts": {
-    "js:proposal": "node --experimental-json-modules js-scripts/proposals.js",
+    "js:proposal": "node --experimental-json-modules scripts/proposal-execution.js"
   },
   "repository": {
     "type": "git",
@@ -19,6 +19,7 @@
   "homepage": "https://github.com/bgd-labs/misc-scripts#readme",
   "dependencies": {
     "axios": "^0.27.2",
+    "dotenv": "^16.0.1",
     "ethers": "^5.6.9"
   }
 }
