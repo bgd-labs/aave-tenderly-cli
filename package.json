@@ -2,11 +2,11 @@
   "name": "misc-scripts",
   "version": "1.0.0",
   "description": "",
-  "main": "tenderly-deploy.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "main": "scripts/tenderly-deploy.js",
   "type": "module",
+  "scripts": {
+    "js:proposal": "node --experimental-json-modules js-scripts/proposals.js",
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/bgd-labs/misc-scripts.git"
@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/bgd-labs/misc-scripts#readme",
   "dependencies": {
+    "axios": "^0.27.2",
     "ethers": "^5.6.9"
   }
 }
