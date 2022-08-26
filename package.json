@@ -14,14 +14,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bgd-labs/misc-scripts.git"
+    "url": "git+https://github.com/bgd-labs/aave-fork-cli.git"
   },
   "author": "",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/bgd-labs/misc-scripts/issues"
+    "url": "https://github.com/bgd-labs/aave-fork-cli/issues"
   },
-  "homepage": "https://github.com/bgd-labs/misc-scripts#readme",
+  "homepage": "https://github.com/bgd-labs/aave-fork-cli#readme",
   "devDependencies": {
     "@types/node": "^18.7.13",
     "@vercel/ncc": "^0.34.0",
