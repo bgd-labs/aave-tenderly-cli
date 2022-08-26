@@ -1,11 +1,11 @@
 import "dotenv/config";
 import { Command } from "commander";
-import { createFork, deleteFork } from "./src/tenderly.js";
+import { createFork, deleteFork } from "./src/tenderly";
 import {
   createProposal,
   deployPayload,
   passAndExecuteProposal,
-} from "./src/governance.js";
+} from "./src/governance";
 
 const program = new Command();
 program
@@ -23,7 +23,12 @@ program
     "path to be payload to be deployed and executed"
   )
   .option("--stayAlive")
-  .action(async function (options) {
+  .action(async function (options: {
+    proposalId?: number;
+    payloadAddress?: string;
+    artifact?: string;
+    stayAlive?: boolean;
+  }) {
     let alias = "vanilla-fork";
     if (options.proposalId) {
       alias = `proposalId-${options.proposalId}`;
@@ -41,14 +46,25 @@ program
     } else if (options.payloadAddress) {
       const proposalId = await createProposal({
         payloadAddress: options.payloadAddress,
+        provider: fork.provider,
       });
-      await passAndExecuteProposal({ proposalId: proposalId });
+      await passAndExecuteProposal({
+        proposalId: proposalId,
+        provider: fork.provider,
+      });
     } else if (options.artifact) {
-      const payloadAddress = await deployPayload(options.artifact);
+      const payloadAddress = await deployPayload({
+        filePath: options.artifact,
+        provider: fork.provider,
+      });
       const proposalId = await createProposal({
+        provider: fork.provider,
         payloadAddress: payloadAddress,
       });
-      await passAndExecuteProposal({ proposalId: proposalId });
+      await passAndExecuteProposal({
+        provider: fork.provider,
+        proposalId: proposalId,
+      });
     }
 
     console.log(

@@ -2,14 +2,14 @@
   "name": "aave-fork-cli",
   "version": "0.0.1",
   "description": "",
-  "main": "main.js",
+  "main": "main.ts",
   "bin": {
     "aave-fork-cli": "dist/main.js"
   },
   "type": "module",
   "scripts": {
     "js:proposal": "node --experimental-json-modules scripts/proposal-execution.js",
-    "build": "ncc build ./main.js -o dist"
+    "build": "ncc build ./main.ts -o dist"
   },
   "repository": {
     "type": "git",
@@ -29,6 +29,7 @@
   },
   "devDependencies": {
     "@types/node": "^18.7.13",
-    "@vercel/ncc": "^0.34.0"
+    "@vercel/ncc": "^0.34.0",
+    "typescript": "^4.8.2"
   }
 }

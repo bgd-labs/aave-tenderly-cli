@@ -1,17 +1,24 @@
 import ethers from "ethers";
 import path from "node:path";
-import GOV_ABI from "./abis/govV2.json" assert { type: "json" };
+import GOV_ABI from "./abis/govV2.json";
 
 const GOV = "0xEC568fffba86c094cf06b22134B23074DFE2252c";
 const SHORT_EXECUTOR = "0xEE56e2B3D491590B5b31738cC34d5232F378a8D5";
 const AAVE_WHALE = "0x25F2226B597E8F9514B3F68F00f494cF4f286491";
 
+interface DefaultInterface {
+  provider: ethers.providers.StaticJsonRpcProvider;
+}
+
+interface DeployPayload extends DefaultInterface {
+  filePath: string;
+}
 /**
  *
  * @param {*} path
  * @returns payloadAddress
  */
-export async function deployPayload({ filePath, provider }) {
+export async function deployPayload({ filePath, provider }: DeployPayload) {
   const artifact = require(path.join(__dirname, filePath));
   // Deploy the payload
   const factory = new ethers.ContractFactory(
@@ -25,12 +32,18 @@ export async function deployPayload({ filePath, provider }) {
   return payload.address;
 }
 
+interface CreateProposal extends DefaultInterface {
+  payloadAddress: string;
+}
 /**
  *
  * @param {*} param0
  * @returns proposalId
  */
-export async function createProposal({ payloadAddress, provider }) {
+export async function createProposal({
+  payloadAddress,
+  provider,
+}: CreateProposal) {
   // Create the proposal
   const governance = new ethers.Contract(
     GOV,
@@ -55,11 +68,17 @@ export async function createProposal({ payloadAddress, provider }) {
   return proposalId;
 }
 
+interface PassAndExecuteProposal extends DefaultInterface {
+  proposalId: number;
+}
 /**
  *
  * @param {*} param0
  */
-export async function passAndExecuteProposal({ proposalId, provider }) {
+export async function passAndExecuteProposal({
+  proposalId,
+  provider,
+}: PassAndExecuteProposal) {
   const governance = new ethers.Contract(
     GOV,
     GOV_ABI,
@@ -96,7 +115,7 @@ export async function passAndExecuteProposal({ proposalId, provider }) {
 
   // execute proposal
   const queuedProposal = await governance.getProposalById(proposalId);
-  const timestamp = (await provider.getBlock()).timestamp;
+  const timestamp = (await (provider as any).getBlock()).timestamp;
   await provider.send("evm_increaseTime", [
     ethers.BigNumber.from(queuedProposal.executionTime)
       .sub(timestamp)

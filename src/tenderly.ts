@@ -15,7 +15,7 @@ const TENDERLY_PROJECT = process.env.TENDERLY_PROJECT;
 
 const projectUrl = `account/${TENDERLY_USER}/project/${TENDERLY_PROJECT}`;
 
-export async function createFork({ alias }) {
+export async function createFork({ alias }: { alias: string }) {
   const forkingPoint = {
     network_id: 1,
     chain_config: { chain_id: 3030 },
@@ -38,7 +38,7 @@ export async function createFork({ alias }) {
   };
 }
 
-export async function deleteFork(forkId) {
+export async function deleteFork(forkId: string) {
   await axiosOnTenderly.delete(
     `account/${TENDERLY_USER}/project/${TENDERLY_PROJECT}/fork/${forkId}`
   );
