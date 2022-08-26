@@ -3,7 +3,7 @@
 ## Installation
 
 ```sh
-npm i -g aave-fork-ci
+npm i -g @bgd-labs/aave-fork-cli
 ```
 
 ## Setup env
