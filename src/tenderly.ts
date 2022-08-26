@@ -26,10 +26,16 @@ export function forkIdToForkParams({ forkId }: { forkId: string }) {
   };
 }
 
-export async function createFork({ alias }: { alias: string }) {
+export async function createFork({
+  alias,
+  forkNetworkId,
+}: {
+  alias: string;
+  forkNetworkId: string;
+}) {
   const forkingPoint = {
     network_id: 1,
-    chain_config: { chain_id: 3030 },
+    chain_config: { chain_id: Number(forkNetworkId) },
     alias,
   };
   // create the specified fork programmatically

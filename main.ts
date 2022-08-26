@@ -11,6 +11,7 @@ import {
 
 interface Options {
   forkId?: string;
+  forkNetworkId: string;
   proposalId?: number;
   payloadAddress?: string;
   artifact?: string;
@@ -41,19 +42,19 @@ program
     "--forkId <forkId>",
     "reuse an existing fork instead of creating a new one"
   )
-  .option("-pi, --proposalId <proposalId>", "proposalId to be executed")
-  .option("-pa, --payloadAddress <address>", "payloadAddress to be executed")
-  .option(
-    "-a, --artifact <path>",
-    "path to be payload to be deployed and executed"
-  )
+  .option("--forkNetworkId <networkId>", "the networkId for the fork", "3030")
+  .option("--proposalId <proposalId>", "proposalId to be executed")
+  .option("--payloadAddress <address>", "payloadAddress to be executed")
+  .option("--artifact <path>", "path to be payload to be deployed and executed")
   .option(
     "--stayAlive",
     "with this option set the fork won't be deleted automatically"
   )
   .action(async function (options: Options) {
     const alias = getName(options);
-    const forkId = options.forkId || (await createFork({ alias }));
+    const forkId =
+      options.forkId ||
+      (await createFork({ alias, forkNetworkId: options.forkNetworkId }));
     const fork = forkIdToForkParams({ forkId });
 
     if (options.proposalId) {
@@ -91,7 +92,9 @@ program
     console.log("--------------");
     console.log(`localStorage.setItem('forkEnabled', 'true');`);
     console.log(`localStorage.setItem('forkBaseChainId', 1);`);
-    console.log(`localStorage.setItem('forkNetworkId', 3030);`);
+    console.log(
+      `localStorage.setItem('forkNetworkId', ${options.forkNetworkId});`
+    );
     console.log(`localStorage.setItem("forkRPCUrl", "${fork.forkUrl}");`);
     console.log("--------------");
 
