@@ -6,6 +6,18 @@
 npm i -g aave-fork-ci
 ```
 
+## Setup env
+
+The tooling relies on tenderly. Therefore you need to setup your console environment accordingly.
+
+```sh
+export TENDERLY_ACCESS_KEY=tenderly_secret
+export TENDERLY_PROJECT=tenderly_project
+export TENDERLY_USER=tenderly_user
+```
+
+To store the secrets across sessions you might want to add them to `.bashrc` or `.profile`.
+
 ## Usage
 
 ```sh
