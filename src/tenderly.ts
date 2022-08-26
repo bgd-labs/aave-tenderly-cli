@@ -1,5 +1,5 @@
 import axios from "axios";
-import ethers from "ethers";
+import { providers } from "ethers";
 
 // an axios instance to make requests to Tenderly, for re-use purposes
 const axiosOnTenderly = axios.create({
@@ -35,7 +35,7 @@ export async function createFork({ alias }: { alias: string }) {
   const forkUrl = `https://rpc.tenderly.co/fork/${forkId}`;
   return {
     forkUrl,
-    provider: new ethers.providers.StaticJsonRpcProvider(forkUrl),
+    provider: new providers.StaticJsonRpcProvider(forkUrl),
     forkId,
   };
 }

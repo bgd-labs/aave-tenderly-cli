@@ -1,4 +1,4 @@
-import ethers from "ethers";
+import { ContractFactory, providers, BigNumber, utils, Contract } from "ethers";
 import path from "path";
 import GOV_ABI from "./abis/govV2.json";
 
@@ -7,7 +7,7 @@ const SHORT_EXECUTOR = "0xEE56e2B3D491590B5b31738cC34d5232F378a8D5";
 const AAVE_WHALE = "0x25F2226B597E8F9514B3F68F00f494cF4f286491";
 
 interface DefaultInterface {
-  provider: ethers.providers.StaticJsonRpcProvider;
+  provider: providers.StaticJsonRpcProvider;
 }
 
 interface DeployPayload extends DefaultInterface {
@@ -19,9 +19,9 @@ interface DeployPayload extends DefaultInterface {
  * @returns payloadAddress
  */
 export async function deployPayload({ filePath, provider }: DeployPayload) {
-  const artifact = require(path.join(__dirname, filePath));
+  const artifact = require(path.join(process.cwd(), filePath));
   // Deploy the payload
-  const factory = new ethers.ContractFactory(
+  const factory = new ContractFactory(
     artifact.abi,
     artifact.bytecode,
     provider.getSigner(AAVE_WHALE)
@@ -45,11 +45,7 @@ export async function createProposal({
   provider,
 }: CreateProposal) {
   // Create the proposal
-  const governance = new ethers.Contract(
-    GOV,
-    GOV_ABI,
-    provider.getSigner(AAVE_WHALE)
-  );
+  const governance = new Contract(GOV, GOV_ABI, provider.getSigner(AAVE_WHALE));
 
   await (
     await governance.create(
@@ -79,17 +75,13 @@ export async function passAndExecuteProposal({
   proposalId,
   provider,
 }: PassAndExecuteProposal) {
-  const governance = new ethers.Contract(
-    GOV,
-    GOV_ABI,
-    provider.getSigner(AAVE_WHALE)
-  );
+  const governance = new Contract(GOV, GOV_ABI, provider.getSigner(AAVE_WHALE));
   // alter forVotes storage so the proposal passes
   await provider.send("tenderly_setStorageAt", [
     GOV,
-    ethers.BigNumber.from(
-      ethers.utils.keccak256(
-        ethers.utils.defaultAbiCoder.encode(
+    BigNumber.from(
+      utils.keccak256(
+        utils.defaultAbiCoder.encode(
           ["uint256", "uint256"],
           [proposalId, "0x4"]
         )
@@ -97,16 +89,13 @@ export async function passAndExecuteProposal({
     )
       .add(11)
       .toHexString(),
-    ethers.utils.hexZeroPad(
-      ethers.utils.parseEther("5000000").toHexString(),
-      32
-    ),
+    utils.hexZeroPad(utils.parseEther("5000000").toHexString(), 32),
   ]);
   // queue proposal
   const activeProposal = await governance.getProposalById(proposalId);
   await provider.send("evm_increaseBlocks", [
-    ethers.BigNumber.from(activeProposal.endBlock)
-      .sub(ethers.BigNumber.from(activeProposal.startBlock))
+    BigNumber.from(activeProposal.endBlock)
+      .sub(BigNumber.from(activeProposal.startBlock))
       .add(1)
       .toHexString(),
   ]);
@@ -117,7 +106,7 @@ export async function passAndExecuteProposal({
   const queuedProposal = await governance.getProposalById(proposalId);
   const timestamp = (await (provider as any).getBlock()).timestamp;
   await provider.send("evm_increaseTime", [
-    ethers.BigNumber.from(queuedProposal.executionTime)
+    BigNumber.from(queuedProposal.executionTime)
       .sub(timestamp)
       .add(1)
       .toNumber(),

@@ -4,12 +4,11 @@
   "description": "",
   "main": "main.ts",
   "bin": {
-    "aave-fork-cli": "dist/main.js"
+    "aave-fork-cli": "dist/index.js"
   },
   "scripts": {
     "start": "npm run build && node dist/index.js",
-    "js:proposal": "node --experimental-json-modules scripts/proposal-execution.js",
-    "build": "esbuild main.ts --bundle --outfile=dist/main.js --platform=node --target=node18",
+    "build": "ncc build ./main.ts -o dist --minify",
     "publish:local": "npm run build && npm pack && npm i -g aave-fork-cli-0.0.1.tgz && rm aave-fork-cli-0.0.1.tgz"
   },
   "repository": {
@@ -29,11 +28,8 @@
     "ethers": "^5.6.9"
   },
   "devDependencies": {
-    "@swc/cli": "^0.1.57",
-    "@swc/core": "^1.2.244",
     "@types/node": "^18.7.13",
     "@vercel/ncc": "^0.34.0",
-    "esbuild": "^0.15.5",
     "typescript": "^4.8.2"
   }
 }

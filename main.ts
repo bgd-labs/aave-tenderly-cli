@@ -11,7 +11,7 @@ import {
 
 const program = new Command();
 program
-  .name("aave-fok-util")
+  .name("aave-fok-cli")
   .description("CLI to create forks and work with governance")
   .version("0.0.1");
 
