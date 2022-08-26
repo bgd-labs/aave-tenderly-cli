@@ -5,7 +5,7 @@
  */
 import ethers from "ethers";
 import contract from "../out/ProposalPayloadAaveFreezeV1.sol/ProposalPayloadAaveFreezeV1.json" assert { type: "json" };
-import GOV_ARTIFACT from "../out/GovHelpers.sol/IAaveGov.json" assert { type: "json" };
+import GOV_ABI from "../abis/govV2.json" assert { type: "json" };
 
 const GOV = "0xEC568fffba86c094cf06b22134B23074DFE2252c";
 const SHORT_EXECUTOR = "0xEE56e2B3D491590B5b31738cC34d5232F378a8D5";
@@ -28,7 +28,7 @@ const payload = await factory.deploy();
 // Create the proposal
 const governance = new ethers.Contract(
   GOV,
-  GOV_ARTIFACT.abi,
+  GOV_ABI,
   provider.getSigner(AAVE_WHALE)
 );
 
@@ -81,4 +81,3 @@ await provider.send("evm_increaseTime", [
 ]);
 
 await governance.execute(id);
-
