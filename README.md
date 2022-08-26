@@ -1,9 +1,9 @@
-# Aave fork cli
+# Aave tenderly cli
 
 ## Installation
 
 ```sh
-npm i -g @bgd-labs/aave-fork-cli
+npm i -g @bgd-labs/aave-tenderly-cli
 ```
 
 ## Setup env
@@ -22,28 +22,28 @@ To store the secrets across sessions you might want to add them to `.bashrc` or 
 
 ```sh
 # help command - will also show short commands not listed here
-aave-fork-cli --help
+aave-tenderly-cli --help
 
 # create a fork
-aave-fork-cli fork
+aave-tenderly-cli fork
 
 # keep the fork alive forever
-aave-fork-cli fork --keepAlive
+aave-tenderly-cli fork --keepAlive
 
 # fork at a specific block (default is latest)
-aave-fork-cli fork --block 15415636
+aave-tenderly-cli fork --block 15415636
 
 # adjust the networkId of the created fork (defaults to 3030)
-aave-fork-cli fork --forkNetworkId 42
+aave-tenderly-cli fork --forkNetworkId 42
 
 # execute a pending proposal
-aave-fork-cli fork --proposalId 95
+aave-tenderly-cli fork --proposalId 95
 
 # create a proposal with existing payload & execute
-aave-fork-cli fork --payloadAddress 0x0...
+aave-tenderly-cli fork --payloadAddress 0x0...
 
 # deploy a payload, create and execute the proposal
-aave-fork-cli fork --artifact ./out/Contract.sol/Contract.json
+aave-tenderly-cli fork --artifact ./out/Contract.sol/Contract.json
 ```
 
 ## Local Development
