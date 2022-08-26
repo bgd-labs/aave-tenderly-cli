@@ -34,9 +34,11 @@ export function forkIdToForkParams({ forkId }: { forkId: string }) {
 export async function createFork({
   alias,
   forkNetworkId,
+  blockNumber,
 }: {
   alias: string;
   forkNetworkId: string;
+  blockNumber?: string;
 }) {
   const { axiosOnTenderly, projectUrl } = getTenderlyClient();
   const forkingPoint = {
@@ -44,6 +46,7 @@ export async function createFork({
     chain_config: { chain_id: Number(forkNetworkId) },
     alias,
   };
+  if (blockNumber) (forkingPoint as any).block_number = Number(blockNumber);
   // create the specified fork programmatically
   const forkResponse = await axiosOnTenderly.post(
     `${projectUrl}/fork`,

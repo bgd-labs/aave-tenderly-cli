@@ -21,7 +21,7 @@ To store the secrets across sessions you might want to add them to `.bashrc` or 
 ## Usage
 
 ```sh
-# help command
+# help command - will also show short commands not listed here
 aave-fork-cli --help
 
 # create a fork
@@ -29,6 +29,9 @@ aave-fork-cli fork
 
 # keep the fork alive forever
 aave-fork-cli fork --keepAlive
+
+# fork at a specific block (default is latest)
+aave-fork-cli fork --block 15415636
 
 # adjust the networkId of the created fork (defaults to 3030)
 aave-fork-cli fork --forkNetworkId 42

@@ -12,6 +12,7 @@ import {
 interface Options {
   forkId?: string;
   forkNetworkId: string;
+  blockNumber?: string;
   proposalId?: number;
   payloadAddress?: string;
   artifact?: string;
@@ -57,6 +58,7 @@ program
     "-fId, --forkId <forkId>",
     "reuse an existing fork instead of creating a new one"
   )
+  .option("-b, --blockNumber <block>", "fork at a certain block")
   .option(
     "-fnId, --forkNetworkId <networkId>",
     "the networkId for the fork",
@@ -76,7 +78,11 @@ program
     const alias = getName(options);
     const forkId =
       options.forkId ||
-      (await createFork({ alias, forkNetworkId: options.forkNetworkId }));
+      (await createFork({
+        alias,
+        forkNetworkId: options.forkNetworkId,
+        blockNumber: options.blockNumber,
+      }));
     const fork = forkIdToForkParams({ forkId });
 
     if (options.proposalId) {
