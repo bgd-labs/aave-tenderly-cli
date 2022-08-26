@@ -1,6 +1,6 @@
 import ethers from "ethers";
 import path from "node:path";
-import GOV_ABI from "../abis/govV2.json" assert { type: "json" };
+import GOV_ABI from "./abis/govV2.json" assert { type: "json" };
 
 const GOV = "0xEC568fffba86c094cf06b22134B23074DFE2252c";
 const SHORT_EXECUTOR = "0xEE56e2B3D491590B5b31738cC34d5232F378a8D5";
