@@ -17,6 +17,15 @@ if (!TENDERLY_PROJECT) throw new Error("TENDERLY_PROJECT must be set");
 
 const projectUrl = `account/${TENDERLY_USER}/project/${TENDERLY_PROJECT}`;
 
+export function forkIdToForkParams({ forkId }: { forkId: string }) {
+  const forkUrl = `https://rpc.tenderly.co/fork/${forkId}`;
+  return {
+    forkUrl,
+    provider: new providers.StaticJsonRpcProvider(forkUrl),
+    forkId,
+  };
+}
+
 export async function createFork({ alias }: { alias: string }) {
   const forkingPoint = {
     network_id: 1,
@@ -32,12 +41,7 @@ export async function createFork({ alias }: { alias: string }) {
   const forkId = forkResponse.data.root_transaction.fork_id;
 
   // create the provider you can use throughout the rest of your test
-  const forkUrl = `https://rpc.tenderly.co/fork/${forkId}`;
-  return {
-    forkUrl,
-    provider: new providers.StaticJsonRpcProvider(forkUrl),
-    forkId,
-  };
+  return forkId as string;
 }
 
 export async function deleteFork(forkId: string) {

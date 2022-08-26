@@ -2,12 +2,31 @@
 
 import "dotenv/config";
 import { Command } from "commander";
-import { createFork, deleteFork } from "./src/tenderly";
+import { createFork, deleteFork, forkIdToForkParams } from "./src/tenderly";
 import {
   createProposal,
   deployPayload,
   passAndExecuteProposal,
 } from "./src/governance";
+
+interface Options {
+  forkId?: string;
+  proposalId?: number;
+  payloadAddress?: string;
+  artifact?: string;
+  stayAlive?: boolean;
+}
+
+function getName(options: Options) {
+  if (options.proposalId) {
+    return `proposalId-${options.proposalId}`;
+  } else if (options.payloadAddress) {
+    return `payloadAddress-${options.payloadAddress}`;
+  } else if (options.artifact) {
+    return `artifact-${options.artifact}`;
+  }
+  return "vanilla-fork";
+}
 
 const program = new Command();
 program
@@ -18,28 +37,25 @@ program
 program
   .command("fork")
   .description("Split a string into substrings and display as an array")
+  .option(
+    "--forkId <forkId>",
+    "reuse an existing fork instead of creating a new one"
+  )
   .option("-pi, --proposalId <proposalId>", "proposalId to be executed")
   .option("-pa, --payloadAddress <address>", "payloadAddress to be executed")
   .option(
     "-a, --artifact <path>",
     "path to be payload to be deployed and executed"
   )
-  .option("--stayAlive")
-  .action(async function (options: {
-    proposalId?: number;
-    payloadAddress?: string;
-    artifact?: string;
-    stayAlive?: boolean;
-  }) {
-    let alias = "vanilla-fork";
-    if (options.proposalId) {
-      alias = `proposalId-${options.proposalId}`;
-    } else if (options.payloadAddress) {
-      alias = `payloadAddress-${options.payloadAddress}`;
-    } else if (options.artifact) {
-      alias = `artifact-${options.artifact}`;
-    }
-    const fork = await createFork({ alias });
+  .option(
+    "--stayAlive",
+    "with this option set the fork won't be deleted automatically"
+  )
+  .action(async function (options: Options) {
+    const alias = getName(options);
+    const forkId = options.forkId || (await createFork({ alias }));
+    const fork = forkIdToForkParams({ forkId });
+
     if (options.proposalId) {
       await passAndExecuteProposal({
         proposalId: options.proposalId,
@@ -79,7 +95,10 @@ program
     console.log(`localStorage.setItem("forkRPCUrl", "${fork.forkUrl}");`);
     console.log("--------------");
 
-    if (!options.stayAlive) {
+    /**
+     * Don't delete forks that were created externally or set to stay alive
+     */
+    if (!options.stayAlive && !options.forkId) {
       console.log(
         "warning: the fork will be deleted once this terminal is closed"
       );
