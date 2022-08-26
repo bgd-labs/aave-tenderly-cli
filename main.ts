@@ -15,7 +15,7 @@ interface Options {
   proposalId?: number;
   payloadAddress?: string;
   artifact?: string;
-  stayAlive?: boolean;
+  keepAlive?: boolean;
 }
 
 function getName(options: Options) {
@@ -29,6 +29,21 @@ function getName(options: Options) {
   return "vanilla-fork";
 }
 
+function listenForInterruptAndKill(forkId: string) {
+  console.log("warning: the fork will be deleted once this terminal is closed");
+  // keep process alive
+  process.stdin.resume();
+
+  // delete fork on exit
+  process.on("SIGINT", function () {
+    console.log("Caught interrupt signal");
+    deleteFork(forkId).then((d) => {
+      console.log("fork deleted");
+      process.exit(0);
+    });
+  });
+}
+
 const program = new Command();
 program
   .name("aave-fok-cli")
@@ -39,15 +54,22 @@ program
   .command("fork")
   .description("Split a string into substrings and display as an array")
   .option(
-    "--forkId <forkId>",
+    "-fId, --forkId <forkId>",
     "reuse an existing fork instead of creating a new one"
   )
-  .option("--forkNetworkId <networkId>", "the networkId for the fork", "3030")
-  .option("--proposalId <proposalId>", "proposalId to be executed")
-  .option("--payloadAddress <address>", "payloadAddress to be executed")
-  .option("--artifact <path>", "path to be payload to be deployed and executed")
   .option(
-    "--stayAlive",
+    "-fnId, --forkNetworkId <networkId>",
+    "the networkId for the fork",
+    "3030"
+  )
+  .option("-pi, --proposalId <proposalId>", "proposalId to be executed")
+  .option("-pa, --payloadAddress <address>", "payloadAddress to be executed")
+  .option(
+    "-a, --artifact <path>",
+    "path to be payload to be deployed and executed"
+  )
+  .option(
+    "-k, --keepAlive",
     "with this option set the fork won't be deleted automatically"
   )
   .action(async function (options: Options) {
@@ -101,22 +123,8 @@ program
     /**
      * Don't delete forks that were created externally or set to stay alive
      */
-    if (!options.stayAlive && !options.forkId) {
-      console.log(
-        "warning: the fork will be deleted once this terminal is closed"
-      );
-      // keep process alive
-      process.stdin.resume();
-
-      // delete fork on exit
-      process.on("SIGINT", function () {
-        console.log("Caught interrupt signal");
-        deleteFork(fork.forkId).then((d) => {
-          console.log("fork deleted");
-          process.exit(0);
-        });
-      });
-    }
+    if (!options.keepAlive && !options.forkId)
+      listenForInterruptAndKill(fork.forkId);
   });
 
 program.parse();

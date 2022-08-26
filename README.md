@@ -11,9 +11,9 @@ npm i -g aave-fork-ci
 The tooling relies on tenderly. Therefore you need to setup your console environment accordingly.
 
 ```sh
-export TENDERLY_ACCESS_KEY=tenderly_secret
+export TENDERLY_ACCESS_TOKEN=tenderly_access_token
 export TENDERLY_PROJECT=tenderly_project
-export TENDERLY_USER=tenderly_user
+export TENDERLY_ACCOUNT=tenderly_account
 ```
 
 To store the secrets across sessions you might want to add them to `.bashrc` or `.profile`.
@@ -28,7 +28,7 @@ aave-fork-cli --help
 aave-fork-cli fork
 
 # keep the fork alive forever
-aave-fork-cli fork --stayAlive
+aave-fork-cli fork --keepAlive
 
 # adjust the networkId of the created fork (defaults to 3030)
 aave-fork-cli fork --forkNetworkId 42

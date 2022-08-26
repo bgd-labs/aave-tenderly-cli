@@ -1,21 +1,26 @@
 import axios from "axios";
 import { providers } from "ethers";
 
-// an axios instance to make requests to Tenderly, for re-use purposes
-const axiosOnTenderly = axios.create({
-  baseURL: "https://api.tenderly.co/api/v1",
-  headers: {
-    "X-Access-Key": process.env.TENDERLY_ACCESS_KEY || "",
-    "Content-Type": "application/json",
-  },
-});
+function getTenderlyClient() {
+  const TENDERLY_ACCOUNT = process.env.TENDERLY_ACCOUNT;
+  const TENDERLY_PROJECT = process.env.TENDERLY_PROJECT;
+  const TENDERLY_ACCESS_TOKEN = process.env.TENDERLY_ACCESS_TOKEN;
+  if (!TENDERLY_ACCOUNT) throw new Error("TENDERLY_ACCOUNT must be set");
+  if (!TENDERLY_PROJECT) throw new Error("TENDERLY_PROJECT must be set");
+  if (!TENDERLY_ACCESS_TOKEN)
+    throw new Error("TENDERLY_ACCESS_TOKEN must be set");
+  // an axios instance to make requests to Tenderly, for re-use purposes
+  const axiosOnTenderly = axios.create({
+    baseURL: "https://api.tenderly.co/api/v1",
+    headers: {
+      "X-Access-Key": TENDERLY_ACCESS_TOKEN || "",
+      "Content-Type": "application/json",
+    },
+  });
 
-const TENDERLY_USER = process.env.TENDERLY_USER;
-const TENDERLY_PROJECT = process.env.TENDERLY_PROJECT;
-if (!TENDERLY_USER) throw new Error("TENDERLY_USER must be set");
-if (!TENDERLY_PROJECT) throw new Error("TENDERLY_PROJECT must be set");
-
-const projectUrl = `account/${TENDERLY_USER}/project/${TENDERLY_PROJECT}`;
+  const projectUrl = `account/${TENDERLY_ACCOUNT}/project/${TENDERLY_PROJECT}`;
+  return { axiosOnTenderly, projectUrl };
+}
 
 export function forkIdToForkParams({ forkId }: { forkId: string }) {
   const forkUrl = `https://rpc.tenderly.co/fork/${forkId}`;
@@ -33,6 +38,7 @@ export async function createFork({
   alias: string;
   forkNetworkId: string;
 }) {
+  const { axiosOnTenderly, projectUrl } = getTenderlyClient();
   const forkingPoint = {
     network_id: 1,
     chain_config: { chain_id: Number(forkNetworkId) },
@@ -51,7 +57,6 @@ export async function createFork({
 }
 
 export async function deleteFork(forkId: string) {
-  await axiosOnTenderly.delete(
-    `account/${TENDERLY_USER}/project/${TENDERLY_PROJECT}/fork/${forkId}`
-  );
+  const { axiosOnTenderly, projectUrl } = getTenderlyClient();
+  await axiosOnTenderly.delete(`${projectUrl}/fork/${forkId}`);
 }
