@@ -1,5 +1,5 @@
 import ethers from "ethers";
-import path from "node:path";
+import path from "path";
 import GOV_ABI from "./abis/govV2.json";
 
 const GOV = "0xEC568fffba86c094cf06b22134B23074DFE2252c";

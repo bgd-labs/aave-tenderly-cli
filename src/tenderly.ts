@@ -12,6 +12,8 @@ const axiosOnTenderly = axios.create({
 
 const TENDERLY_USER = process.env.TENDERLY_USER;
 const TENDERLY_PROJECT = process.env.TENDERLY_PROJECT;
+if (!TENDERLY_USER) throw new Error("TENDERLY_USER must be set");
+if (!TENDERLY_PROJECT) throw new Error("TENDERLY_PROJECT must be set");
 
 const projectUrl = `account/${TENDERLY_USER}/project/${TENDERLY_PROJECT}`;
 
