@@ -2,24 +2,31 @@
 
 import "dotenv/config";
 import { Command } from "commander";
-import { createFork, deleteFork, forkIdToForkParams } from "./src/tenderly";
+import { createFork, forkIdToForkParams } from "./src/tenderly";
 import {
   createProposal,
   deployPayload,
   passAndExecuteProposal,
 } from "./src/governance";
 
-interface Options {
+interface ForkOptions {
+  forkId?: string;
+  networkId: string;
+  forkNetworkId: string;
+  blockNumber?: string;
+  alias?: string;
+  keepAlive?: boolean;
+}
+interface GovOptions extends Omit<ForkOptions, "networkId" | "alias"> {
   forkId?: string;
   forkNetworkId: string;
   blockNumber?: string;
   proposalId?: number;
   payloadAddress?: string;
   artifact?: string;
-  keepAlive?: boolean;
 }
 
-function getName(options: Options) {
+function getName(options: GovOptions) {
   if (options.proposalId) {
     return `proposalId-${options.proposalId}`;
   } else if (options.payloadAddress) {
@@ -30,21 +37,6 @@ function getName(options: Options) {
   return "vanilla-fork";
 }
 
-function listenForInterruptAndKill(forkId: string) {
-  console.log("warning: the fork will be deleted once this terminal is closed");
-  // keep process alive
-  process.stdin.resume();
-
-  // delete fork on exit
-  process.on("SIGINT", function () {
-    console.log("Caught interrupt signal");
-    deleteFork(forkId).then((d) => {
-      console.log("fork deleted");
-      process.exit(0);
-    });
-  });
-}
-
 const program = new Command();
 program
   .name("aave-fok-cli")
@@ -53,7 +45,34 @@ program
 
 program
   .command("fork")
-  .description("Split a string into substrings and display as an array")
+  .description("Allows creating forks")
+  .option(
+    "-fId, --forkId <forkId>",
+    "reuse an existing fork instead of creating a new one"
+  )
+  .option("-b, --blockNumber <block>", "fork at a certain block")
+  .option("-nId, --networkId <networkId>", "the networkId to be forked", "1")
+  .option(
+    "-fnId, --forkNetworkId <networkId>",
+    "the networkId for the fork",
+    "3030"
+  )
+  .option(
+    "-k, --keepAlive",
+    "with this option set the fork won't be deleted automatically"
+  )
+  .action(async function (options: ForkOptions) {
+    await createFork({
+      alias: options.alias,
+      networkId: options.networkId,
+      forkNetworkId: options.forkNetworkId,
+      blockNumber: options.blockNumber,
+    });
+  });
+
+program
+  .command("gov")
+  .description("Allows creating/executing local/on-chain proposals on forks")
   .option(
     "-fId, --forkId <forkId>",
     "reuse an existing fork instead of creating a new one"
@@ -74,7 +93,7 @@ program
     "-k, --keepAlive",
     "with this option set the fork won't be deleted automatically"
   )
-  .action(async function (options: Options) {
+  .action(async function (options: GovOptions) {
     const alias = getName(options);
     const forkId =
       options.forkId ||
@@ -113,24 +132,6 @@ program
         proposalId: proposalId,
       });
     }
-
-    console.log(
-      "To use this fork on the aave interface type the following commands in the console."
-    );
-    console.log("--------------");
-    console.log(`localStorage.setItem('forkEnabled', 'true');`);
-    console.log(`localStorage.setItem('forkBaseChainId', 1);`);
-    console.log(
-      `localStorage.setItem('forkNetworkId', ${options.forkNetworkId});`
-    );
-    console.log(`localStorage.setItem("forkRPCUrl", "${fork.forkUrl}");`);
-    console.log("--------------");
-
-    /**
-     * Don't delete forks that were created externally or set to stay alive
-     */
-    if (!options.keepAlive && !options.forkId)
-      listenForInterruptAndKill(fork.forkId);
   });
 
 program.parse();

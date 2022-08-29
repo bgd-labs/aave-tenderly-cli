@@ -76,31 +76,35 @@ export async function passAndExecuteProposal({
   provider,
 }: PassAndExecuteProposal) {
   const governance = new Contract(GOV, GOV_ABI, provider.getSigner(AAVE_WHALE));
-  // alter forVotes storage so the proposal passes
-  await provider.send("tenderly_setStorageAt", [
-    GOV,
-    BigNumber.from(
-      utils.keccak256(
-        utils.defaultAbiCoder.encode(
-          ["uint256", "uint256"],
-          [proposalId, "0x4"]
+  const currentProposalState = await governance.getProposalState(proposalId);
+  // no need to queue when it's already queued
+  if (currentProposalState !== 5) {
+    // alter forVotes storage so the proposal passes
+    await provider.send("tenderly_setStorageAt", [
+      GOV,
+      BigNumber.from(
+        utils.keccak256(
+          utils.defaultAbiCoder.encode(
+            ["uint256", "uint256"],
+            [proposalId, "0x4"]
+          )
         )
       )
-    )
-      .add(11)
-      .toHexString(),
-    utils.hexZeroPad(utils.parseEther("5000000").toHexString(), 32),
-  ]);
-  // queue proposal
-  const activeProposal = await governance.getProposalById(proposalId);
-  await provider.send("evm_increaseBlocks", [
-    BigNumber.from(activeProposal.endBlock)
-      .sub(BigNumber.from(activeProposal.startBlock))
-      .add(1)
-      .toHexString(),
-  ]);
+        .add(11)
+        .toHexString(),
+      utils.hexZeroPad(utils.parseEther("5000000").toHexString(), 32),
+    ]);
+    // queue proposal
+    const activeProposal = await governance.getProposalById(proposalId);
+    await provider.send("evm_increaseBlocks", [
+      BigNumber.from(activeProposal.endBlock)
+        .sub(BigNumber.from(activeProposal.startBlock))
+        .add(1)
+        .toHexString(),
+    ]);
 
-  await governance.queue(proposalId);
+    await governance.queue(proposalId);
+  }
 
   // execute proposal
   const queuedProposal = await governance.getProposalById(proposalId);

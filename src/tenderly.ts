@@ -1,5 +1,6 @@
 import axios from "axios";
 import { providers } from "ethers";
+import { urlToHttpOptions } from "url";
 
 function getTenderlyClient() {
   const TENDERLY_ACCOUNT = process.env.TENDERLY_ACCOUNT;
@@ -22,8 +23,12 @@ function getTenderlyClient() {
   return { axiosOnTenderly, projectUrl };
 }
 
+function getForkUrl(forkId: string) {
+  return `https://rpc.tenderly.co/fork/${forkId}`;
+}
+
 export function forkIdToForkParams({ forkId }: { forkId: string }) {
-  const forkUrl = `https://rpc.tenderly.co/fork/${forkId}`;
+  const forkUrl = getForkUrl(forkId);
   return {
     forkUrl,
     provider: new providers.StaticJsonRpcProvider(forkUrl),
@@ -31,22 +36,42 @@ export function forkIdToForkParams({ forkId }: { forkId: string }) {
   };
 }
 
+function listenForInterruptAndKill(forkId: string) {
+  console.log("warning: the fork will be deleted once this terminal is closed");
+  // keep process alive
+  process.stdin.resume();
+
+  // delete fork on exit
+  process.on("SIGINT", function () {
+    console.log("Caught interrupt signal");
+    deleteFork(forkId).then((d) => {
+      console.log("fork deleted");
+      process.exit(0);
+    });
+  });
+}
+
 export async function createFork({
   alias,
+  networkId = "1",
   forkNetworkId,
   blockNumber,
+  keepAlive,
 }: {
-  alias: string;
+  alias?: string;
+  networkId?: string;
   forkNetworkId: string;
   blockNumber?: string;
+  keepAlive?: boolean;
 }) {
   const { axiosOnTenderly, projectUrl } = getTenderlyClient();
   const forkingPoint = {
-    network_id: 1,
+    network_id: Number(networkId),
     chain_config: { chain_id: Number(forkNetworkId) },
-    alias,
   };
   if (blockNumber) (forkingPoint as any).block_number = Number(blockNumber);
+  if (alias) (forkingPoint as any).alias = alias;
+
   // create the specified fork programmatically
   const forkResponse = await axiosOnTenderly.post(
     `${projectUrl}/fork`,
@@ -54,6 +79,29 @@ export async function createFork({
   );
 
   const forkId = forkResponse.data.root_transaction.fork_id;
+
+  console.log(`To use this fork on the aave interface you need to do the following things.
+
+1. Open the browser console on app.aave.com (or a local instance) and enter
+--------------
+localStorage.setItem('forkEnabled', 'true');
+localStorage.setItem('forkBaseChainId', ${networkId});
+localStorage.setItem('forkNetworkId', ${forkNetworkId});
+localStorage.setItem("forkRPCUrl", "${getForkUrl(forkId)}");
+--------------
+2. As localStorage is not observable you need to reload now.
+3. You can now see & select forked mainnet markets on the ui.
+To interact with them you still need to setup your wallet.
+To setup your wallet you need to add a network with:
+--------------
+networkId: ${forkNetworkId}
+rpcUrl: ${getForkUrl(forkId)}
+--------------
+    `);
+
+  if (!keepAlive) {
+    listenForInterruptAndKill(forkId);
+  }
 
   // create the provider you can use throughout the rest of your test
   return forkId as string;

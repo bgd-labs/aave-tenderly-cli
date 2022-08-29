@@ -1,5 +1,7 @@
 # Aave tenderly cli
 
+`aave-tenderly-cli` is a cli package meant to be installed globally so you can simply reuse it in various projects to test things on the production ui. Each command will print out instructions to hook up the ui appropriately so you can run the ui against your newly created fork.
+
 ## Installation
 
 ```sh
@@ -21,29 +23,54 @@ To store the secrets across sessions you might want to add them to `.bashrc` or 
 ## Usage
 
 ```sh
-# help command - will also show short commands not listed here
+# help command
 aave-tenderly-cli --help
 
-# create a fork
-aave-tenderly-cli fork
+# help command for fork utilities
+aave-tenderly-cli fork --help
 
-# keep the fork alive forever
-aave-tenderly-cli fork --keepAlive
+# help command for gov utilities
+aave-tenderly-cli gov --help
+```
 
-# fork at a specific block (default is latest)
-aave-tenderly-cli fork --block 15415636
+## Examples
 
-# adjust the networkId of the created fork (defaults to 3030)
-aave-tenderly-cli fork --forkNetworkId 42
+**Simple fork**
 
-# execute a pending proposal
-aave-tenderly-cli fork --proposalId 95
+To create a fork of the aave polygon market you can simply run `aave-tenderly-cli fork --networkId 137`
 
-# create a proposal with existing payload & execute
-aave-tenderly-cli fork --payloadAddress 0x0...
+**Execute pending proposal**
 
-# deploy a payload, create and execute the proposal
-aave-tenderly-cli fork --artifact ./out/Contract.sol/Contract.json
+To review the effects of a proposal before it's executed onchain you can simply run `aave-tenderly-cli gov --proposalId 95 --blockNumber 15435130`.
+`blockNumber` is optional and only supplied here as otherwise the docs would be outdated to soon(when 95 is executed).
+
+**Execute local proposal payload**
+
+To review effects of a local proposalPayload you can run `aave-fork-cli fork --artifact ./out/FeiRiskParamsUpdate.sol/FeiRiskParamsUpdate.json ` where --artifact needs to be the relative path to the `PayloadArtifact` that you want to execute.
+
+All these commands will yield instructions on how to setup the aave interface to run against your fork.
+
+```txt
+To use this fork on the aave interface you need to do the following things.
+
+1. Open the browser console on app.aave.com (or a local instance) and enter
+--------------
+localStorage.setItem('forkEnabled', 'true');
+localStorage.setItem('forkBaseChainId', 1);
+localStorage.setItem('forkNetworkId', 3030);
+localStorage.setItem("forkRPCUrl", "https://rpc.tenderly.co/fork/id");
+--------------
+2. As localStorage is not observable you need to reload now.
+3. You can now see & select forked mainnet markets on the ui.
+To interact with them you still need to setup your wallet.
+To setup your wallet you need to add a network with:
+--------------
+networkId: 3030
+rpcUrl: https://rpc.tenderly.co/fork/id
+--------------
+
+warning: the fork will be deleted once this terminal is closed
+Proposal executed
 ```
 
 ## Local Development
