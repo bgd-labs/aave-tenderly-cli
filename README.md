@@ -46,7 +46,7 @@ To review the effects of a proposal before it's executed onchain you can simply 
 
 **Execute local proposal payload**
 
-To review effects of a local proposalPayload you can run `aave-fork-cli fork --artifact ./out/FeiRiskParamsUpdate.sol/FeiRiskParamsUpdate.json ` where --artifact needs to be the relative path to the `PayloadArtifact` that you want to execute.
+To review effects of a local proposalPayload you can run `aave-fork-cli fork --artifact ./out/FeiRiskParamsUpdate.sol/FeiRiskParamsUpdate.json` where `--artifact` needs to be the relative path to the `PayloadArtifact` that you want to execute.
 
 All these commands will yield instructions on how to setup the aave interface to run against your fork.
 
