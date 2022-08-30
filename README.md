@@ -2,6 +2,8 @@
 
 `aave-tenderly-cli` is a cli package meant to be installed globally so you can simply reuse it in various projects to test things on the production ui. Each command will print out instructions to hook up the ui appropriately so you can run the ui against your newly created fork.
 
+![CLI](./cli.gif)
+
 ## Installation
 
 ```sh
