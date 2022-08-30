@@ -41,8 +41,7 @@ To create a fork of the aave polygon market you can simply run `aave-tenderly-cl
 
 **Execute pending proposal**
 
-To review the effects of a proposal before it's executed onchain you can simply run `aave-tenderly-cli gov --proposalId 95 --blockNumber 15435130`.
-`blockNumber` is optional and only supplied here as otherwise the docs would be outdated to soon(when 95 is executed).
+To review the effects of a proposal before it's executed onchain you can simply run `aave-tenderly-cli gov --proposalId 95`.
 
 **Execute local proposal payload**
 
