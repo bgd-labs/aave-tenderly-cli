@@ -43,6 +43,10 @@ To create a fork of the aave polygon market you can simply run `aave-tenderly-cl
 
 To review the effects of a proposal before it's executed onchain you can simply run `aave-tenderly-cli gov --proposalId 95`.
 
+**Execute proposal payload**
+
+To execute a deployed payload just run `aave-tenderly-cli gov --payloadAddress 0xb8fe2a2104afb975240d3d32a7823a01cb74639f`.
+
 **Execute local proposal payload**
 
 To review effects of a local proposalPayload you can run `aave-fork-cli fork --artifact ./out/FeiRiskParamsUpdate.sol/FeiRiskParamsUpdate.json` where `--artifact` needs to be the relative path to the `PayloadArtifact` that you want to execute.
