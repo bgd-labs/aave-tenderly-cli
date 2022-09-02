@@ -9,6 +9,7 @@ import {
   passAndExecuteProposal,
 } from "./src/governance";
 import { executeL2Payload } from "./src/l2Gov";
+import * as allConfigs from "@bgd-labs/aave-address-book";
 
 interface ForkOptions {
   forkId?: string;
@@ -31,6 +32,7 @@ interface GovL2Options extends ForkOptions {
   proposalId?: number;
   payloadAddress?: string;
   artifact?: string;
+  pool: string;
 }
 
 function getName(options: GovOptions) {
@@ -148,6 +150,13 @@ program
     "reuse an existing fork instead of creating a new one"
   )
   .option("-b, --blockNumber <block>", "fork at a certain block")
+  .option(
+    `-p, --pool", "the pool to use (required to find the acl): ${Object.keys(
+      allConfigs
+    )
+      .filter((c) => (allConfigs as any)[c].ACL_MANAGER)
+      .join(",")}`
+  )
   .option("-nId, --networkId <networkId>", "the networkId to be forked", "137")
   .option(
     "-fnId, --forkNetworkId <networkId>",
@@ -175,20 +184,14 @@ program
       }));
     const fork = forkIdToForkParams({ forkId });
 
+    // TODO: action set Id execution
     if (options.proposalId) {
-      // await passAndExecuteProposal({
-      //   proposalId: options.proposalId,
-      //   provider: fork.provider,
-      // });
     } else if (options.payloadAddress) {
-      const proposalId = await createProposal({
+      await executeL2Payload({
         payloadAddress: options.payloadAddress,
         provider: fork.provider,
+        pool: options.pool,
       });
-      // await passAndExecuteProposal({
-      //   proposalId: proposalId,
-      //   provider: fork.provider,
-      // });
     } else if (options.artifact) {
       const payloadAddress = await deployPayload({
         filePath: options.artifact,
@@ -197,15 +200,8 @@ program
       await executeL2Payload({
         payloadAddress,
         provider: fork.provider,
+        pool: options.pool,
       });
-      // const proposalId = await createProposal({
-      //   provider: fork.provider,
-      //   payloadAddress: payloadAddress,
-      // });
-      // await passAndExecuteProposal({
-      //   provider: fork.provider,
-      //   proposalId: proposalId,
-      // });
     }
   });
 

@@ -1,13 +1,13 @@
-import { ContractFactory, providers, BigNumber, utils, Contract } from "ethers";
+import { providers, BigNumber, utils, Contract } from "ethers";
 import { keccak256, toUtf8Bytes, defaultAbiCoder } from "ethers/lib/utils";
-import ACL_MANAGER_ABI from "./abis/aclManager.json";
+import * as allConfigs from "@bgd-labs/aave-address-book";
 
 interface DefaultInterface {
   provider: providers.StaticJsonRpcProvider;
 }
 
 interface ExecuteL2Payload extends DefaultInterface {
-  aclManagerAddress?: string; // TODO: require or sth
+  pool?: string; // TODO: require or sth
   payloadAddress: string;
 }
 
@@ -28,15 +28,25 @@ function getACLRoleAddressSlot(_role: string, address: string) {
   );
 }
 
+function getAclForPool(pool: string) {
+  const config = Object.values(allConfigs).find(
+    (config) => config.POOL === pool
+  ) as { ACL_MANAGER: string };
+  if (!config) throw new Error("could not find pool");
+  if (!config.ACL_MANAGER)
+    throw new Error("only v3 pools with ACL_MANAGER supported right now");
+  return config.ACL_MANAGER;
+}
+
 export async function executeL2Payload({
-  aclManagerAddress = "0xa72636CbcAa8F5FF95B2cc47F3CDEe83F3294a0B",
+  pool,
   payloadAddress,
   provider,
 }: ExecuteL2Payload) {
-  const address = "0x8f15dee0762dfc571b306a24dc68ca4bd14fd2ac";
+  const aclManagerAddress = (allConfigs as any)[pool].ACL_MANAGER;
   const listingAdminSlot = getACLRoleAddressSlot(
     "ASSET_LISTING_ADMIN",
-    address
+    payloadAddress
   );
 
   await provider.send("tenderly_setStorageAt", [
@@ -47,7 +57,7 @@ export async function executeL2Payload({
 
   console.log("added role ASSET_LISTING_ADMIN");
 
-  const riskAdminSlot = getACLRoleAddressSlot("RISK_ADMIN", address);
+  const riskAdminSlot = getACLRoleAddressSlot("RISK_ADMIN", payloadAddress);
 
   await provider.send("tenderly_setStorageAt", [
     aclManagerAddress,
@@ -72,4 +82,5 @@ export async function executeL2Payload({
   );
 
   await payload.execute();
+  console.log("executed payload");
 }
