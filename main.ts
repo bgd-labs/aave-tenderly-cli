@@ -8,6 +8,7 @@ import {
   deployPayload,
   passAndExecuteProposal,
 } from "./src/governance";
+import { executeL2Payload } from "./src/l2Gov";
 
 interface ForkOptions {
   forkId?: string;
@@ -21,6 +22,12 @@ interface GovOptions extends Omit<ForkOptions, "networkId" | "alias"> {
   forkId?: string;
   forkNetworkId: string;
   blockNumber?: string;
+  proposalId?: number;
+  payloadAddress?: string;
+  artifact?: string;
+}
+
+interface GovL2Options extends ForkOptions {
   proposalId?: number;
   payloadAddress?: string;
   artifact?: string;
@@ -131,6 +138,74 @@ program
         provider: fork.provider,
         proposalId: proposalId,
       });
+    }
+  });
+
+program
+  .command("govl2")
+  .option(
+    "-fId, --forkId <forkId>",
+    "reuse an existing fork instead of creating a new one"
+  )
+  .option("-b, --blockNumber <block>", "fork at a certain block")
+  .option("-nId, --networkId <networkId>", "the networkId to be forked", "137")
+  .option(
+    "-fnId, --forkNetworkId <networkId>",
+    "the networkId for the fork",
+    "3030"
+  )
+  .option("-pa, --payloadAddress <address>", "payloadAddress to be executed")
+  .option(
+    "-a, --artifact <path>",
+    "path to be payload to be deployed and executed"
+  )
+  .option(
+    "-k, --keepAlive",
+    "with this option set the fork won't be deleted automatically"
+  )
+  .action(async function (options: GovL2Options) {
+    const alias = getName(options);
+    const forkId =
+      options.forkId ||
+      (await createFork({
+        alias,
+        networkId: options.networkId,
+        forkNetworkId: options.forkNetworkId,
+        blockNumber: options.blockNumber,
+      }));
+    const fork = forkIdToForkParams({ forkId });
+
+    if (options.proposalId) {
+      // await passAndExecuteProposal({
+      //   proposalId: options.proposalId,
+      //   provider: fork.provider,
+      // });
+    } else if (options.payloadAddress) {
+      const proposalId = await createProposal({
+        payloadAddress: options.payloadAddress,
+        provider: fork.provider,
+      });
+      // await passAndExecuteProposal({
+      //   proposalId: proposalId,
+      //   provider: fork.provider,
+      // });
+    } else if (options.artifact) {
+      const payloadAddress = await deployPayload({
+        filePath: options.artifact,
+        provider: fork.provider,
+      });
+      await executeL2Payload({
+        payloadAddress,
+        provider: fork.provider,
+      });
+      // const proposalId = await createProposal({
+      //   provider: fork.provider,
+      //   payloadAddress: payloadAddress,
+      // });
+      // await passAndExecuteProposal({
+      //   provider: fork.provider,
+      //   proposalId: proposalId,
+      // });
     }
   });
 
