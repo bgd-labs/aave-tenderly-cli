@@ -43,7 +43,7 @@ export async function executeL2Payload({
   payloadAddress,
   provider,
 }: ExecuteL2Payload) {
-  const aclManagerAddress = (allConfigs as any)[pool].ACL_MANAGER;
+  const aclManagerAddress = (allConfigs as any)[pool as string].ACL_MANAGER;
   const listingAdminSlot = getACLRoleAddressSlot(
     "ASSET_LISTING_ADMIN",
     payloadAddress

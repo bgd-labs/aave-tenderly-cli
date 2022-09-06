@@ -151,7 +151,7 @@ program
   )
   .option("-b, --blockNumber <block>", "fork at a certain block")
   .option(
-    `-p, --pool", "the pool to use (required to find the acl): ${Object.keys(
+    `-p, --pool, "the pool to use (required to find the acl): ${Object.keys(
       allConfigs
     )
       .filter((c) => (allConfigs as any)[c].ACL_MANAGER)

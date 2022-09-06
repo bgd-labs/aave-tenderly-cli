@@ -8,6 +8,7 @@
     "aave-tenderly-cli": "dist/index.js"
   },
   "scripts": {
+    "test": "ts-node test.ts",
     "start": "npm run build && node dist/index.js",
     "build": "ncc build ./main.ts -o dist --minify",
     "publish:local": "npm run build && npm pack && npm i -g bgd-labs-aave-tenderly-cli-0.0.2.tgz && rm bgd-labs-aave-tenderly-cli-0.0.2.tgz"
@@ -23,13 +24,22 @@
   },
   "homepage": "https://github.com/bgd-labs/aave-tenderly-cli#readme",
   "devDependencies": {
+    "@aave/contract-helpers": "^1.6.0",
     "@bgd-labs/aave-address-book": "^1.2.0",
+    "@types/inquirer": "^9.0.1",
     "@types/node": "^18.7.13",
     "@vercel/ncc": "^0.34.0",
     "axios": "^0.27.2",
+    "bignumber.js": "^9.1.0",
     "commander": "^9.4.0",
     "dotenv": "^16.0.1",
     "ethers": "^5.6.9",
-    "typescript": "^4.8.2"
+    "inquirer": "^8.2.3",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.8.2",
+    "yargs": "^17.1.1-candidate.0"
+  },
+  "dependencies": {
+    "@types/yargs": "^17.0.12"
   }
 }
