@@ -7,7 +7,7 @@ interface DefaultInterface {
 }
 
 interface ExecuteL2Payload extends DefaultInterface {
-  pool?: string; // TODO: require or sth
+  aclManagerAddress: string;
   payloadAddress: string;
 }
 
@@ -39,11 +39,10 @@ function getAclForPool(pool: string) {
 }
 
 export async function executeL2Payload({
-  pool,
+  aclManagerAddress,
   payloadAddress,
   provider,
 }: ExecuteL2Payload) {
-  const aclManagerAddress = (allConfigs as any)[pool as string].ACL_MANAGER;
   const listingAdminSlot = getACLRoleAddressSlot(
     "ASSET_LISTING_ADMIN",
     payloadAddress

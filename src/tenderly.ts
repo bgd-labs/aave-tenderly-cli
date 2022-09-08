@@ -1,6 +1,5 @@
 import axios from "axios";
 import { providers } from "ethers";
-import { urlToHttpOptions } from "url";
 
 function getTenderlyClient() {
   const TENDERLY_ACCOUNT = process.env.TENDERLY_ACCOUNT;
@@ -49,6 +48,16 @@ function listenForInterruptAndKill(forkId: string) {
       process.exit(0);
     });
   });
+}
+
+export async function getForkParameters({ forkId }: { forkId: string }) {
+  const { axiosOnTenderly, projectUrl } = getTenderlyClient();
+  const response = await axiosOnTenderly.get(`${projectUrl}/fork/${forkId}`);
+  return {
+    networkId: response.data.simulation_fork.network_id,
+    forkNetworkId: response.data.simulation_fork.chain_config.chain_id,
+    blockNumber: response.data.simulation_fork.block_number,
+  };
 }
 
 export async function createFork({
