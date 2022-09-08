@@ -1,7 +1,5 @@
 import { providers, BigNumber, utils, Contract } from "ethers";
 import { keccak256, toUtf8Bytes, defaultAbiCoder } from "ethers/lib/utils";
-import * as allConfigs from "@bgd-labs/aave-address-book";
-
 interface DefaultInterface {
   provider: providers.StaticJsonRpcProvider;
 }
@@ -28,58 +26,56 @@ function getACLRoleAddressSlot(_role: string, address: string) {
   );
 }
 
-function getAclForPool(pool: string) {
-  const config = Object.values(allConfigs).find(
-    (config) => config.POOL === pool
-  ) as { ACL_MANAGER: string };
-  if (!config) throw new Error("could not find pool");
-  if (!config.ACL_MANAGER)
-    throw new Error("only v3 pools with ACL_MANAGER supported right now");
-  return config.ACL_MANAGER;
-}
-
 export async function executeL2Payload({
   aclManagerAddress,
   payloadAddress,
   provider,
 }: ExecuteL2Payload) {
-  const listingAdminSlot = getACLRoleAddressSlot(
-    "ASSET_LISTING_ADMIN",
-    payloadAddress
-  );
+  try {
+    const listingAdminSlot = getACLRoleAddressSlot(
+      "ASSET_LISTING_ADMIN",
+      payloadAddress
+    );
+    await provider.send("tenderly_setStorageAt", [
+      aclManagerAddress,
+      listingAdminSlot,
+      utils.hexZeroPad(BigNumber.from(1).toHexString(), 32),
+    ]);
+    console.log("added role ASSET_LISTING_ADMIN");
 
-  await provider.send("tenderly_setStorageAt", [
-    aclManagerAddress,
-    listingAdminSlot,
-    utils.hexZeroPad(BigNumber.from(1).toHexString(), 32),
-  ]);
+    const riskAdminSlot = getACLRoleAddressSlot("RISK_ADMIN", payloadAddress);
+    await provider.send("tenderly_setStorageAt", [
+      aclManagerAddress,
+      riskAdminSlot,
+      utils.hexZeroPad(BigNumber.from(1).toHexString(), 32),
+    ]);
+    console.log("added role RISK_ADMIN");
 
-  console.log("added role ASSET_LISTING_ADMIN");
+    const poolAdminSlot = getACLRoleAddressSlot("POOL_ADMIN", payloadAddress);
+    await provider.send("tenderly_setStorageAt", [
+      aclManagerAddress,
+      poolAdminSlot,
+      utils.hexZeroPad(BigNumber.from(1).toHexString(), 32),
+    ]);
+    console.log("added role POOL_ADMIN");
 
-  const riskAdminSlot = getACLRoleAddressSlot("RISK_ADMIN", payloadAddress);
+    const payload = new Contract(
+      payloadAddress,
+      [
+        {
+          inputs: [],
+          name: "execute",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+      ],
+      provider.getSigner()
+    );
 
-  await provider.send("tenderly_setStorageAt", [
-    aclManagerAddress,
-    riskAdminSlot,
-    utils.hexZeroPad(BigNumber.from(1).toHexString(), 32),
-  ]);
-
-  console.log("added role RISK_ADMIN");
-
-  const payload = new Contract(
-    payloadAddress,
-    [
-      {
-        inputs: [],
-        name: "execute",
-        outputs: [],
-        stateMutability: "nonpayable",
-        type: "function",
-      },
-    ],
-    provider.getSigner()
-  );
-
-  await payload.execute();
-  console.log("executed payload");
+    await payload.execute();
+    console.log("executed payload");
+  } catch (e: any) {
+    console.log(e.message);
+  }
 }

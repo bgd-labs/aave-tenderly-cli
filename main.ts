@@ -17,6 +17,7 @@ import {
 } from "./src/governance";
 import { executeL2Payload } from "./src/l2Gov";
 import * as allConfigs from "@bgd-labs/aave-address-book";
+import { ADDRCONFIG } from "dns";
 
 inquirer.registerPrompt("fuzzypath", require("inquirer-fuzzy-path"));
 
@@ -178,7 +179,6 @@ const questions: { [key: string]: InquirerQuestion | YargsQuestion } = {
       "The pool address targeted in the payload (required to pick the proper acl)",
     inquirerOnly: true,
     choices: (args) => {
-      console.log(args);
       return Object.keys(allConfigs).filter(
         (key) => (allConfigs as any)[key].CHAIN_ID === args.networkId
       );
@@ -194,7 +194,7 @@ const questions: { [key: string]: InquirerQuestion | YargsQuestion } = {
     describe: "ACL manager address",
     type: "string",
     when: (args) =>
-      !(
+      !!(
         (args.artifactPath || args.proposalId || args.payloadAddress) &&
         !args.pool &&
         Number(args.networkId) !== ChainId.mainnet
@@ -289,6 +289,7 @@ function getName(options: Options) {
     (await createFork({
       alias,
       forkNetworkId: argv.forkNetworkId,
+      networkId: argv.networkId,
       blockNumber: argv.blockNumber === "latest" ? undefined : argv.blockNumber,
     }));
   const fork = forkIdToForkParams({ forkId });
