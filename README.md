@@ -27,12 +27,6 @@ To store the secrets across sessions you might want to add them to `.bashrc` or 
 ```sh
 # help command
 aave-tenderly-cli --help
-
-# help command for fork utilities
-aave-tenderly-cli fork --help
-
-# help command for gov utilities
-aave-tenderly-cli gov --help
 ```
 
 ## Examples

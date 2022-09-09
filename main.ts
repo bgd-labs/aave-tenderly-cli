@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import "dotenv/config";
-import inquirer from "inquirer";
+import inquirer, { Question } from "inquirer";
 import { hideBin } from "yargs/helpers";
 import yargs from "yargs/yargs";
 import { ChainId } from "@aave/contract-helpers";
@@ -46,6 +46,7 @@ type CommonOptions = {
   //
   pool?: string;
   aclManagerAddress?: string;
+  keepAlive?: boolean | string;
 };
 
 type Options = ForkOptions & CommonOptions;
@@ -53,7 +54,7 @@ type Options = ForkOptions & CommonOptions;
 interface SharedQuestion {
   // shared
   type: "string" | "list" | "confirm" | "fuzzypath" | "number";
-  default?: string;
+  default?: string | number | boolean;
   choices?: string[] | number[] | ((args: Options) => string[]);
   when?:
     | ((args: Options) => boolean | undefined)
@@ -221,6 +222,13 @@ const questions: { [key: string]: InquirerQuestion | YargsQuestion } = {
         Number(args.networkId) !== ChainId.mainnet
       ),
   },
+  keepAlive: {
+    message: "Should the fork be deleted when this terminal is closed",
+    describe: "ACL manager address",
+    type: "confirm",
+    default: false,
+    when: (args) => args.forkType === "new",
+  },
 };
 
 function getPrompts(options: {
@@ -236,6 +244,12 @@ function getPrompts(options: {
       when,
     })
   );
+}
+
+function typeToYargsType(type: SharedQuestion["type"]) {
+  if (type === "fuzzypath") return "string";
+  if (type === "confirm") return "boolean";
+  return type;
 }
 
 function getOptions(options: {
@@ -256,7 +270,7 @@ function getOptions(options: {
           default: _default,
           demandOption,
           describe,
-          type,
+          type: typeToYargsType(type),
           coerce,
         };
         return previous;
@@ -312,6 +326,7 @@ function getName(options: Options) {
       forkNetworkId: argv.forkNetworkId,
       networkId: String(argv.networkId),
       blockNumber: argv.blockNumber === "latest" ? undefined : argv.blockNumber,
+      keepAlive: argv.keepAlive === true || argv.keepAlive === "true",
     }));
   const fork = forkIdToForkParams({ forkId });
   const aclManagerAddress = argv.pool
