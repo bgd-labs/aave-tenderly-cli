@@ -33,7 +33,8 @@ type ExistingFork = {
 type ForkOptions = NewFork | ExistingFork;
 
 type CommonOptions = {
-  networkId: string;
+  networkName?: keyof typeof ChainId;
+  networkId: ChainId;
   blockNumber?: string;
   forkNetworkId: string;
   //
@@ -61,6 +62,7 @@ interface SharedQuestion {
   inquirerOnly?: boolean;
   message: string;
   itemType?: "file";
+  transformer?: any;
 }
 
 interface InquirerQuestion extends SharedQuestion {
@@ -100,6 +102,22 @@ const initialQuestions: { [key: string]: InquirerQuestion | YargsQuestion } = {
 const questions: { [key: string]: InquirerQuestion | YargsQuestion } = {
   ...initialQuestions,
   // config to setup a custom fork
+  networkName: {
+    message: "Select network to fork",
+    describe: "Network to be forked",
+    type: "list",
+    choices: [
+      "mainnet",
+      "optimism",
+      "polygon",
+      "fantom",
+      "arbitrum_one",
+      "avalanche",
+      "harmony",
+    ],
+    inquirerOnly: true,
+    when: (args) => args.forkType === "new",
+  },
   networkId: {
     message: "Select network to fork",
     describe: "Network to be forked",
@@ -113,7 +131,11 @@ const questions: { [key: string]: InquirerQuestion | YargsQuestion } = {
       ChainId.avalanche,
       ChainId.harmony,
     ],
-    when: (args) => args.forkType === "new",
+    when: (args) => {
+      // little hack to implicitly set networkId
+      if (args.networkName) args.networkId = ChainId[args.networkName];
+      return args.forkType === "new" && !args.networkName;
+    },
   },
   blockNumber: {
     message: "Select the blockNumber to fork",
@@ -206,13 +228,17 @@ function getPrompts(options: {
   [key: string]: InquirerQuestion | YargsQuestion;
 }) {
   return Object.entries(options).map(
-    ([name, { choices, default: _default, message, type, when }]) => ({
+    ([
+      name,
+      { choices, default: _default, message, type, when, transformer },
+    ]) => ({
       choices,
       default: _default,
       message,
       name,
       type,
       when,
+      transformer,
     })
   );
 }
