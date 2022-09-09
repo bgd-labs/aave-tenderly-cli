@@ -136,6 +136,7 @@ const questions: { [key: string]: InquirerQuestion | YargsQuestion } = {
       if (args.networkName) args.networkId = ChainId[args.networkName];
       return args.forkType === "new" && !args.networkName;
     },
+    demandOption: true,
   },
   blockNumber: {
     message: "Select the blockNumber to fork",
