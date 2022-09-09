@@ -92,7 +92,7 @@ const initialQuestions: { [key: string]: InquirerQuestion | YargsQuestion } = {
   },
   forkId: {
     message: "Enter forkId",
-    describe: "Existing fork id",
+    describe: "Reuse existing fork id",
     type: "string",
     when: (args) => args.forkType === "existing",
   },
@@ -138,8 +138,8 @@ const questions: { [key: string]: InquirerQuestion | YargsQuestion } = {
     demandOption: true,
   },
   blockNumber: {
-    message: "Select the blockNumber to fork",
-    describe: "Blocknumber to fork",
+    message: "Select the blockNumber to fork off",
+    describe: "Blocknumber to fork off",
     type: "string",
     default: "latest",
     when: (args) => args.forkType === "new",
@@ -159,7 +159,7 @@ const questions: { [key: string]: InquirerQuestion | YargsQuestion } = {
   },
   proposalId: {
     message: "Existing proposalId to execute",
-    describe: "The proposalId to execute",
+    describe: "The proposal id to execute",
     type: "number",
     when: (args) =>
       args.enterProposalId === true &&
@@ -173,7 +173,7 @@ const questions: { [key: string]: InquirerQuestion | YargsQuestion } = {
   },
   payloadAddress: {
     message: "Enter the deployed payload address",
-    describe: "The payloadAddress to execute",
+    describe: "The payload address to execute",
     type: "string",
     when: (args) => args.enterPayloadAddress === true && !args.proposalId,
   },
@@ -186,7 +186,7 @@ const questions: { [key: string]: InquirerQuestion | YargsQuestion } = {
   artifactPath: {
     type: "fuzzypath",
     itemType: "file",
-    message: "Path to artifact",
+    message: "Path to artifact.json",
     describe: "The path to the artifact to execute",
     when: (args) =>
       args.enterArtifactPath === true &&
@@ -196,9 +196,7 @@ const questions: { [key: string]: InquirerQuestion | YargsQuestion } = {
   // get the correct acl
   pool: {
     type: "list",
-    message: "Pool address of the target pool",
-    describe:
-      "The pool address targeted in the payload (required to pick the proper acl)",
+    message: "Select the target pool",
     inquirerOnly: true,
     choices: (args) => {
       return Object.keys(allConfigs).filter(
@@ -212,7 +210,7 @@ const questions: { [key: string]: InquirerQuestion | YargsQuestion } = {
       ),
   },
   aclManagerAddress: {
-    message: "ACL manager address of the target pool",
+    message: "Enter ACL manager address of the target pool",
     describe: "ACL manager address",
     type: "string",
     when: (args) =>
@@ -223,8 +221,8 @@ const questions: { [key: string]: InquirerQuestion | YargsQuestion } = {
       ),
   },
   keepAlive: {
-    message: "Should the fork be deleted when this terminal is closed",
-    describe: "ACL manager address",
+    message: "Should the fork be deleted when this terminal is closed?",
+    describe: "Keep the fork alive after this session",
     type: "confirm",
     default: false,
     when: (args) => args.forkType === "new",
