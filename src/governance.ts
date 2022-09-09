@@ -24,7 +24,7 @@ export async function deployPayload({ filePath, provider }: DeployPayload) {
   const factory = new ContractFactory(
     artifact.abi,
     artifact.bytecode,
-    provider.getSigner(AAVE_WHALE)
+    provider.getSigner()
   );
 
   const payload = await factory.deploy();

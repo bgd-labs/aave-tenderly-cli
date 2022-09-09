@@ -27,31 +27,25 @@ To store the secrets across sessions you might want to add them to `.bashrc` or 
 ```sh
 # help command
 aave-tenderly-cli --help
-
-# help command for fork utilities
-aave-tenderly-cli fork --help
-
-# help command for gov utilities
-aave-tenderly-cli gov --help
 ```
 
 ## Examples
 
 **Simple fork**
 
-To create a fork of the aave polygon market you can simply run `aave-tenderly-cli fork --networkId 137`
+To create a fork of the aave polygon market you can simply run `aave-tenderly-cli --networkId 137`
 
 **Execute pending proposal**
 
-To review the effects of a proposal before it's executed onchain you can simply run `aave-tenderly-cli gov --proposalId 95`.
+To review the effects of a proposal before it's executed onchain you can simply run `aave-tenderly-cli --proposalId 95 --networkId 1`.
 
 **Execute proposal payload**
 
-To execute a deployed payload just run `aave-tenderly-cli gov --payloadAddress 0xb8fe2a2104afb975240d3d32a7823a01cb74639f`.
+To execute a deployed payload just run `aave-tenderly-cli --payloadAddress 0xb8fe2a2104afb975240d3d32a7823a01cb74639f --networkId 1`.
 
 **Execute local proposal payload**
 
-To review effects of a local proposalPayload you can run `aave-fork-cli fork --artifact ./out/FeiRiskParamsUpdate.sol/FeiRiskParamsUpdate.json` where `--artifact` needs to be the relative path to the `PayloadArtifact` that you want to execute.
+To review effects of a local proposalPayload you can run `aave-fork-cli --artifactPath ./out/FeiRiskParamsUpdate.sol/FeiRiskParamsUpdate.json --networkId 1` where `--artifactPath` needs to be the relative path to the `PayloadArtifact` that you want to execute.
 
 All these commands will yield instructions on how to setup the aave interface to run against your fork.
 
