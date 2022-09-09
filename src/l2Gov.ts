@@ -31,6 +31,7 @@ export async function executeL2Payload({
   payloadAddress,
   provider,
 }: ExecuteL2Payload) {
+  console.log(aclManagerAddress, payloadAddress);
   try {
     const listingAdminSlot = getACLRoleAddressSlot(
       "ASSET_LISTING_ADMIN",

@@ -316,7 +316,7 @@ function getName(options: Options) {
     (await createFork({
       alias,
       forkNetworkId: argv.forkNetworkId,
-      networkId: argv.networkId,
+      networkId: String(argv.networkId),
       blockNumber: argv.blockNumber === "latest" ? undefined : argv.blockNumber,
     }));
   const fork = forkIdToForkParams({ forkId });
