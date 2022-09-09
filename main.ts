@@ -17,7 +17,6 @@ import {
 } from "./src/governance";
 import { executeL2Payload } from "./src/l2Gov";
 import * as allConfigs from "@bgd-labs/aave-address-book";
-import { ADDRCONFIG } from "dns";
 
 inquirer.registerPrompt("fuzzypath", require("inquirer-fuzzy-path"));
 
@@ -62,7 +61,6 @@ interface SharedQuestion {
   inquirerOnly?: boolean;
   message: string;
   itemType?: "file";
-  transformer?: any;
 }
 
 interface InquirerQuestion extends SharedQuestion {
@@ -229,17 +227,13 @@ function getPrompts(options: {
   [key: string]: InquirerQuestion | YargsQuestion;
 }) {
   return Object.entries(options).map(
-    ([
-      name,
-      { choices, default: _default, message, type, when, transformer },
-    ]) => ({
+    ([name, { choices, default: _default, message, type, when }]) => ({
       choices,
       default: _default,
       message,
       name,
       type,
       when,
-      transformer,
     })
   );
 }
