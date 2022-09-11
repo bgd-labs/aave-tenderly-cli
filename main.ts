@@ -200,7 +200,7 @@ const questions: { [key: string]: InquirerQuestion | YargsQuestion } = {
     inquirerOnly: true,
     choices: (args) => {
       return Object.keys(allConfigs).filter(
-        (key) => (allConfigs as any)[key].CHAIN_ID === args.networkId
+        (key) => (allConfigs as any)[key].CHAIN_ID === Number(args.networkId)
       );
     },
     when: (args) =>
@@ -221,7 +221,7 @@ const questions: { [key: string]: InquirerQuestion | YargsQuestion } = {
       ),
   },
   keepAlive: {
-    message: "Should the fork be deleted when this terminal is closed?",
+    message: "Should the fork be kept alive after terminal is closed?",
     describe: "Keep the fork alive after this session",
     type: "confirm",
     default: false,
