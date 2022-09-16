@@ -36,7 +36,9 @@ export function forkIdToForkParams({ forkId }: { forkId: string }) {
 }
 
 function listenForInterruptAndKill(forkId: string) {
-  console.log("warning: the fork will be deleted once this terminal is closed");
+  console.log("##############################################################");
+  console.log("WARNING: the fork will be deleted once this terminal is closed");
+  console.log("##############################################################");
   // keep process alive
   process.stdin.resume();
 
@@ -88,25 +90,6 @@ export async function createFork({
   );
 
   const forkId = forkResponse.data.root_transaction.fork_id;
-
-  console.log(`To use this fork on the aave interface you need to do the following things.
-
-1. Open the browser console on app.aave.com (or a local instance) and enter
---------------
-localStorage.setItem('forkEnabled', 'true');
-localStorage.setItem('forkBaseChainId', ${networkId});
-localStorage.setItem('forkNetworkId', ${forkNetworkId});
-localStorage.setItem("forkRPCUrl", "${getForkUrl(forkId)}");
---------------
-2. As localStorage is not observable you need to reload now.
-3. You can now see & select forked mainnet markets on the ui.
-To interact with them you still need to setup your wallet.
-To setup your wallet you need to add a network with:
---------------
-networkId: ${forkNetworkId}
-rpcUrl: ${getForkUrl(forkId)}
---------------
-    `);
 
   if (!keepAlive) {
     listenForInterruptAndKill(forkId);

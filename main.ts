@@ -135,7 +135,6 @@ const questions: { [key: string]: InquirerQuestion | YargsQuestion } = {
       if (args.networkName) args.networkId = ChainId[args.networkName];
       return args.forkType === "new" && !args.networkName;
     },
-    demandOption: true,
   },
   blockNumber: {
     message: "Select the blockNumber to fork off",
@@ -375,4 +374,23 @@ function getName(options: Options) {
       });
     }
   }
+
+  console.log(`To use this fork on the aave interface you need to do the following things.
+
+1. Open the browser console on app.aave.com (or a local instance) and enter
+--------------
+localStorage.setItem('forkEnabled', 'true');
+localStorage.setItem('forkBaseChainId', ${argv.networkId});
+localStorage.setItem('forkNetworkId', ${argv.forkNetworkId});
+localStorage.setItem("forkRPCUrl", "${fork.forkUrl}");
+--------------
+2. As localStorage is not observable you need to reload now.
+3. You can now see & select forked mainnet markets on the ui.
+To interact with them you still need to setup your wallet.
+To setup your wallet you need to add a network with:
+--------------
+networkId: ${argv.networkId}
+rpcUrl: ${fork.forkUrl}
+--------------
+    `);
 })();
