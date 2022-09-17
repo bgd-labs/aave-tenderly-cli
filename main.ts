@@ -36,6 +36,7 @@ type CommonOptions = {
   networkId: ChainId;
   blockNumber?: string;
   forkNetworkId: string;
+  forkId?: string;
   //
   enterProposalId: boolean;
   proposalId?: number;
@@ -296,6 +297,7 @@ function getName(options: Options) {
     if (initialAnswers.forkType === "existing") {
       // seed parameters on existing fork
       const params = await getForkParameters({ forkId: initialAnswers.forkId });
+      console.log(params);
       initialAnswers.blockNumber = params.blockNumber;
       initialAnswers.forkNetworkId = params.forkNetworkId;
       initialAnswers.networkId = params.networkId;
@@ -310,7 +312,7 @@ function getName(options: Options) {
     });
   }
 
-  const argv = (await yargs(hideBinArgv)
+  let argv = (await yargs(hideBinArgv)
     .usage("Usage: npx $0")
     .options(getOptions(questions))
     .parseAsync()) as unknown as Options;
@@ -373,6 +375,13 @@ function getName(options: Options) {
         aclManagerAddress,
       });
     }
+  }
+
+  if (argv.forkId && !argv.networkId) {
+    const params = await getForkParameters({
+      forkId: argv.forkId,
+    });
+    argv = { ...argv, ...params };
   }
 
   console.log(`To use this fork on the aave interface you need to do the following things.
