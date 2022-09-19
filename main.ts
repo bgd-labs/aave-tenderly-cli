@@ -131,6 +131,7 @@ const questions: { [key: string]: InquirerQuestion | YargsQuestion } = {
       ChainId.avalanche,
       ChainId.harmony,
     ],
+    default: ChainId.mainnet,
     when: (args) => {
       // little hack to implicitly set networkId
       if (args.networkName) args.networkId = ChainId[args.networkName];
