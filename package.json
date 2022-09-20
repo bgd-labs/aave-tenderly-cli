@@ -1,6 +1,6 @@
 {
   "name": "@bgd-labs/aave-tenderly-cli",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "",
   "main": "main.ts",
   "private": false,
@@ -10,7 +10,7 @@
   "scripts": {
     "start": "npm run build && node dist/index.js",
     "build": "ncc build ./main.ts -o dist --minify",
-    "publish:local": "npm run build && npm pack && npm i -g bgd-labs-aave-tenderly-cli-0.0.6.tgz && rm bgd-labs-aave-tenderly-cli-0.0.6.tgz"
+    "publish:local": "npm run build && npm pack && npm i -g bgd-labs-aave-tenderly-cli-0.0.7.tgz && rm bgd-labs-aave-tenderly-cli-0.0.7.tgz"
   },
   "repository": {
     "type": "git",

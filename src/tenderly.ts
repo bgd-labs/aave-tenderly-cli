@@ -103,3 +103,12 @@ export async function deleteFork(forkId: string) {
   const { axiosOnTenderly, projectUrl } = getTenderlyClient();
   await axiosOnTenderly.delete(`${projectUrl}/fork/${forkId}`);
 }
+
+export async function fundAccount(forkId: string, address: string) {
+  const { axiosOnTenderly, projectUrl } = getTenderlyClient();
+
+  await axiosOnTenderly.post(`${projectUrl}/fork/${forkId}/balance`, {
+    accounts: [address],
+    amount: 1000,
+  });
+}

@@ -8,6 +8,7 @@ import { ChainId } from "@aave/contract-helpers";
 import {
   createFork,
   forkIdToForkParams,
+  fundAccount,
   getForkParameters,
 } from "./src/tenderly";
 import {
@@ -47,6 +48,7 @@ type CommonOptions = {
   //
   pool?: string;
   aclManagerAddress?: string;
+  userAddress?: string;
   keepAlive?: boolean | string;
 };
 
@@ -221,6 +223,12 @@ const questions: { [key: string]: InquirerQuestion | YargsQuestion } = {
         Number(args.networkId) !== ChainId.mainnet
       ),
   },
+  userAddress: {
+    message:
+      "Enter an address you want to fund with 1000 native currency on the fork?",
+    describe: "Address to fund with 1000 of native currency",
+    type: "string",
+  },
   keepAlive: {
     message: "Should the fork be kept alive after terminal is closed?",
     describe: "Keep the fork alive after this session",
@@ -383,6 +391,10 @@ function getName(options: Options) {
       forkId: argv.forkId,
     });
     argv = { ...argv, ...params };
+  }
+
+  if (argv.userAddress) {
+    await fundAccount(forkId, argv.userAddress);
   }
 
   console.log(`To use this fork on the aave interface you need to do the following things.
