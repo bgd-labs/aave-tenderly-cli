@@ -64,6 +64,13 @@ export async function executeL2Payload({
       [
         {
           inputs: [],
+          name: "owner",
+          outputs: [{ internalType: "address", name: "", type: "address" }],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
           name: "execute",
           outputs: [],
           stateMutability: "nonpayable",
@@ -73,7 +80,16 @@ export async function executeL2Payload({
       provider.getSigner()
     );
 
-    await payload.execute();
+    // sometimes payloads use ownable and onlyOwner modifier on `execute`
+    // therefore we check if we can fetch owner and set the owner as signer
+    try {
+      const owner = await payload.owner();
+      const payloadWithOwner = payload.connect(provider.getSigner(owner));
+      await payloadWithOwner.execute();
+    } catch (e) {
+      await payload.execute();
+    }
+
     console.log("executed payload");
   } catch (e: any) {
     console.log(e.message);
