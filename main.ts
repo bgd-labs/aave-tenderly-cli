@@ -46,8 +46,7 @@ type CommonOptions = {
   enterArtifactPath: boolean;
   artifactPath?: string;
   //
-  pool?: string;
-  aclManagerAddress?: string;
+  pool: string;
   userAddress?: string;
   keepAlive?: boolean | string;
 };
@@ -58,6 +57,8 @@ interface SharedQuestion {
   // shared
   type: "string" | "list" | "confirm" | "fuzzypath" | "number";
   default?: string | number | boolean;
+  // additional property for option in --help which requires static options
+  staticChoices?: string[] | number[];
   choices?: string[] | number[] | ((args: Options) => string[]);
   when?:
     | ((args: Options) => boolean | undefined)
@@ -200,7 +201,8 @@ const questions: { [key: string]: InquirerQuestion | YargsQuestion } = {
   pool: {
     type: "list",
     message: "Select the target pool",
-    inquirerOnly: true,
+    describe: "Select the target pool",
+    staticChoices: Object.keys(allConfigs),
     choices: (args) => {
       return Object.keys(allConfigs).filter(
         (key) => (allConfigs as any)[key].CHAIN_ID === Number(args.networkId)
@@ -209,17 +211,6 @@ const questions: { [key: string]: InquirerQuestion | YargsQuestion } = {
     when: (args) =>
       !!(
         (args.artifactPath || args.proposalId || args.payloadAddress) &&
-        Number(args.networkId) !== ChainId.mainnet
-      ),
-  },
-  aclManagerAddress: {
-    message: "Enter ACL manager address of the target pool",
-    describe: "ACL manager address",
-    type: "string",
-    when: (args) =>
-      !!(
-        (args.artifactPath || args.proposalId || args.payloadAddress) &&
-        !args.pool &&
         Number(args.networkId) !== ChainId.mainnet
       ),
   },
@@ -269,11 +260,19 @@ function getOptions(options: {
         previous,
         [
           name,
-          { choices, default: _default, demandOption, describe, type, coerce },
+          {
+            staticChoices,
+            choices,
+            default: _default,
+            demandOption,
+            describe,
+            type,
+            coerce,
+          },
         ]
       ) => {
         previous[name] = {
-          choices,
+          choices: staticChoices || choices || undefined,
           default: _default,
           demandOption,
           describe,
@@ -337,9 +336,6 @@ function getName(options: Options) {
       keepAlive: argv.keepAlive === true || argv.keepAlive === "true",
     }));
   const fork = forkIdToForkParams({ forkId });
-  const aclManagerAddress = argv.pool
-    ? (allConfigs as any)[argv.pool].ACL_MANAGER
-    : argv.aclManagerAddress;
 
   if (argv.proposalId) {
     await passAndExecuteProposal({
@@ -360,7 +356,7 @@ function getName(options: Options) {
       await executeL2Payload({
         payloadAddress: argv.payloadAddress,
         provider: fork.provider,
-        aclManagerAddress,
+        pool: argv.pool,
       });
     }
   } else if (argv.artifactPath) {
@@ -381,7 +377,7 @@ function getName(options: Options) {
       await executeL2Payload({
         payloadAddress,
         provider: fork.provider,
-        aclManagerAddress,
+        pool: argv.pool,
       });
     }
   }

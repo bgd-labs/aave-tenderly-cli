@@ -10,7 +10,8 @@
   "scripts": {
     "start": "npm run build && node dist/index.js",
     "build": "ncc build ./main.ts -o dist --minify",
-    "publish:local": "npm run build && npm pack && npm i -g bgd-labs-aave-tenderly-cli-0.0.8.tgz && rm bgd-labs-aave-tenderly-cli-0.0.8.tgz"
+    "publish:local": "npm run build && npm pack && npm i -g bgd-labs-aave-tenderly-cli-0.0.8.tgz && rm bgd-labs-aave-tenderly-cli-0.0.8.tgz",
+    "ci:publish": "npm run build && npm publish --access=public"
   },
   "repository": {
     "type": "git",
