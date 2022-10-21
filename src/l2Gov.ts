@@ -80,12 +80,7 @@ export async function executeL2Payload({
         utils.hexZeroPad(BigNumber.from(1).toHexString(), 32),
       ]);
       console.log("added role POOL_ADMIN");
-    } else {
-      // there's no acl manager on v2
-      const config = Object.keys(allConfigs).find((key) => key === pool);
-      console.log(config);
     }
-
     const payload = new Contract(
       payloadAddress,
       [
