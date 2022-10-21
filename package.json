@@ -8,10 +8,10 @@
     "aave-tenderly-cli": "dist/index.js"
   },
   "scripts": {
-    "start": "npm run build && node dist/index.js",
+    "start": "yarn build && node dist/index.js",
     "build": "ncc build ./main.ts -o dist --minify",
-    "publish:local": "npm run build && npm pack && npm i -g bgd-labs-aave-tenderly-cli-0.0.8.tgz && rm bgd-labs-aave-tenderly-cli-0.0.8.tgz",
-    "ci:publish": "npm run build && npm publish --access=public"
+    "publish:local": "yarn build && npm pack && npm i -g bgd-labs-aave-tenderly-cli-0.0.8.tgz && rm bgd-labs-aave-tenderly-cli-0.0.8.tgz",
+    "ci:publish": "yarn build && npm publish --access=public"
   },
   "repository": {
     "type": "git",

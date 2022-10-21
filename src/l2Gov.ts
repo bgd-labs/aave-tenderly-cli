@@ -116,7 +116,7 @@ export async function executeL2Payload({
       if (isV2) {
         const adminSlot = getPoolAdminSlot();
         await provider.send("tenderly_setStorageAt", [
-          config.POOL_ADDRESSES_PROVIDER,
+          (config as typeof allConfigs.AaveV2Ethereum).POOL_ADDRESSES_PROVIDER,
           adminSlot,
           utils.hexZeroPad(payloadAddress, 32),
         ]);
