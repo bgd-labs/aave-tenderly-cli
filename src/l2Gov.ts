@@ -1,5 +1,10 @@
 import { providers, BigNumber, utils, Contract } from "ethers";
-import { keccak256, toUtf8Bytes, defaultAbiCoder } from "ethers/lib/utils";
+import {
+  keccak256,
+  toUtf8Bytes,
+  defaultAbiCoder,
+  formatBytes32String,
+} from "ethers/lib/utils";
 import * as allConfigs from "@bgd-labs/aave-address-book";
 
 interface DefaultInterface {
@@ -9,6 +14,16 @@ interface DefaultInterface {
 interface ExecuteL2Payload extends DefaultInterface {
   payloadAddress: string;
   pool: string;
+}
+
+function getPoolAdminSlot() {
+  const slot = "0x2";
+  const role = formatBytes32String("POOL_ADMIN");
+  const encodedSlot = defaultAbiCoder.encode(
+    ["bytes32", "uint256"],
+    [role, slot]
+  );
+  return keccak256(encodedSlot);
 }
 
 function getACLRoleAddressSlot(_role: string, address: string) {
@@ -104,10 +119,13 @@ export async function executeL2Payload({
       await payloadWithOwner.execute();
     } catch (e) {
       if (isV2) {
-        const poolAdmin = isV2
-          ? (config as typeof allConfigs.AaveV2Ethereum).POOL_ADMIN
-          : undefined;
-        await payload.connect(provider.getSigner(poolAdmin)).execute();
+        const adminSlot = getPoolAdminSlot();
+        await provider.send("tenderly_setStorageAt", [
+          config.POOL_ADDRESSES_PROVIDER,
+          adminSlot,
+          utils.hexZeroPad(payloadAddress, 32),
+        ]);
+        await payload.execute();
       } else {
         await payload.execute();
       }
