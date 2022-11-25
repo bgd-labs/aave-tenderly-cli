@@ -1,6 +1,6 @@
 {
   "name": "@bgd-labs/aave-tenderly-cli",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "",
   "main": "main.ts",
   "private": false,
