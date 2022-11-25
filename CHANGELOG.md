@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.10](https://github.com/bgd-labs/aave-tenderly-cli/compare/v0.0.9...v0.0.10) (2022-11-25)
+
+
+### Bug Fixes
+
+* adjust for governance delay ([7700ac2](https://github.com/bgd-labs/aave-tenderly-cli/commit/7700ac2011d598c9b87fc4d2d673eff15598e15f))
+
 ### 0.0.9 (2022-10-21)
 
 
