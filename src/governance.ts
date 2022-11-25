@@ -96,9 +96,11 @@ export async function passAndExecuteProposal({
     ]);
     // queue proposal
     const activeProposal = await governance.getProposalById(proposalId);
+    const delay = await governance.getVotingDelay();
     await provider.send("evm_increaseBlocks", [
       BigNumber.from(activeProposal.endBlock)
         .sub(BigNumber.from(activeProposal.startBlock))
+        .add(delay)
         .add(1)
         .toHexString(),
     ]);
