@@ -35,6 +35,31 @@ export async function deployPayload({ filePath, provider }: DeployPayload) {
 interface CreateProposal extends DefaultInterface {
   payloadAddress: string;
 }
+
+interface CreateCalldataProposal extends DefaultInterface {
+  calldata: string;
+}
+
+/**
+ *
+ * @param {*} param0
+ * @returns proposalId
+ */
+export async function createCalldataProposal({
+  calldata,
+  provider,
+}: CreateCalldataProposal) {
+  // Create the proposal
+  const governance = new Contract(GOV, GOV_ABI, provider.getSigner(AAVE_WHALE));
+  await provider
+    .getSigner(AAVE_WHALE)
+    .sendTransaction({ to: GOV, data: calldata });
+
+  const proposalId = (await governance.getProposalsCount()) - 1;
+  console.log(`Proposal created: ${proposalId}`);
+  return proposalId;
+}
+
 /**
  *
  * @param {*} param0
