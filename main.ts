@@ -17,7 +17,6 @@ import {
   passAndExecuteProposal,
 } from "./src/governance";
 import { executeL2Payload } from "./src/l2Gov";
-import * as allConfigs from "@bgd-labs/aave-address-book";
 
 inquirer.registerPrompt("fuzzypath", require("inquirer-fuzzy-path"));
 
@@ -47,7 +46,6 @@ type CommonOptions = {
   enterArtifactPath: boolean;
   artifactPath?: string;
   //
-  pool: string;
   userAddress?: string;
   keepAlive?: boolean | string;
 };
@@ -197,23 +195,6 @@ const questions: { [key: string]: InquirerQuestion | YargsQuestion } = {
       args.enterArtifactPath === true &&
       !args.proposalId &&
       !args.payloadAddress,
-  },
-  // get the correct acl
-  pool: {
-    type: "list",
-    message: "Select the target pool",
-    describe: "Select the target pool",
-    staticChoices: Object.keys(allConfigs),
-    choices: (args) => {
-      return Object.keys(allConfigs).filter(
-        (key) => (allConfigs as any)[key].CHAIN_ID === Number(args.networkId)
-      );
-    },
-    when: (args) =>
-      !!(
-        (args.artifactPath || args.proposalId || args.payloadAddress) &&
-        Number(args.networkId) !== ChainId.mainnet
-      ),
   },
   userAddress: {
     message:
@@ -367,7 +348,7 @@ function getName(options: Options) {
       await executeL2Payload({
         payloadAddress: argv.payloadAddress,
         provider: fork.provider,
-        pool: argv.pool,
+        networkId: argv.networkId,
       });
     }
   } else if (argv.artifactPath) {
@@ -388,7 +369,7 @@ function getName(options: Options) {
       await executeL2Payload({
         payloadAddress,
         provider: fork.provider,
-        pool: argv.pool,
+        networkId: argv.networkId,
       });
     }
   }

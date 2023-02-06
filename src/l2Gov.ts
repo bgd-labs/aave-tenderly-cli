@@ -25,15 +25,23 @@ interface DefaultInterface {
 
 interface ExecuteL2Payload extends DefaultInterface {
   payloadAddress: string;
-  pool: string;
+  networkId: number;
 }
 
 export async function executeL2Payload({
   payloadAddress,
   provider,
-  pool,
+  networkId,
 }: ExecuteL2Payload) {
-  const config = allConfigs[pool as keyof typeof allConfigs];
+  const key = Object.keys(allConfigs).find(
+    (key) =>
+      (
+        allConfigs[
+          key as keyof typeof allConfigs
+        ] as typeof allConfigs.AaveV3Optimism
+      ).CHAIN_ID === Number(networkId)
+  ) as keyof typeof allConfigs;
+  const config = allConfigs[key];
   const executor =
     (config as typeof allConfigs.AaveV3Optimism).ACL_ADMIN ||
     (config as typeof allConfigs.AaveV2Polygon).POOL_ADMIN;
