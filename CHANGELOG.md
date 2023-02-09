@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.11](https://github.com/bgd-labs/aave-tenderly-cli/compare/v0.0.10...v0.0.11) (2023-02-09)
+
+
+### Features
+
+* allow custom fork labels ([#11](https://github.com/bgd-labs/aave-tenderly-cli/issues/11)) ([1d8dcdb](https://github.com/bgd-labs/aave-tenderly-cli/commit/1d8dcdb95b377d201e273b5e676ef302ecf7a20f))
+* use mock executor on l2s ([#13](https://github.com/bgd-labs/aave-tenderly-cli/issues/13)) ([bf13cff](https://github.com/bgd-labs/aave-tenderly-cli/commit/bf13cffe2cab9d26245261228131c17f315678c4))
+
 ### [0.0.10](https://github.com/bgd-labs/aave-tenderly-cli/compare/v0.0.9...v0.0.10) (2022-11-25)
 
 
