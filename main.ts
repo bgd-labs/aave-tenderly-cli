@@ -12,6 +12,7 @@ import {
   getForkParameters,
 } from "./src/tenderly";
 import {
+  createCalldataProposal,
   createProposal,
   deployPayload,
   passAndExecuteProposal,
@@ -45,6 +46,8 @@ type CommonOptions = {
   payloadAddress?: string;
   enterArtifactPath: boolean;
   artifactPath?: string;
+  enterCalldata: boolean;
+  calldata?: string;
   //
   userAddress?: string;
   keepAlive?: boolean | string;
@@ -178,7 +181,7 @@ const questions: { [key: string]: InquirerQuestion | YargsQuestion } = {
     message: "Enter the deployed payload address",
     describe: "The payload address to execute",
     type: "string",
-    when: (args) => args.enterPayloadAddress === true && !args.proposalId,
+    when: (args) => args.enterPayloadAddress === true,
   },
   enterArtifactPath: {
     message: "Do you want to deploy and execute a local payload?",
@@ -191,10 +194,20 @@ const questions: { [key: string]: InquirerQuestion | YargsQuestion } = {
     itemType: "file",
     message: "Path to artifact.json",
     describe: "The path to the artifact to execute",
+    when: (args) => args.enterArtifactPath === true,
+  },
+  enterCalldata: {
+    message: "Do you want to create and execute raw calldata?",
+    inquirerOnly: true,
+    type: "confirm",
     when: (args) =>
-      args.enterArtifactPath === true &&
-      !args.proposalId &&
-      !args.payloadAddress,
+      !args.proposalId && !args.payloadAddress && !args.artifactPath,
+  },
+  calldata: {
+    message: "Enter the proposal creation calldata",
+    describe: "Proposal creation calldata",
+    type: "string",
+    when: (args) => args.enterCalldata === true,
   },
   userAddress: {
     message:
@@ -334,6 +347,18 @@ function getName(options: Options) {
       proposalId: Number(argv.proposalId),
       provider: fork.provider,
     });
+  } else if (argv.calldata) {
+    // for now only supports mainnet
+    if (Number(argv.networkId) === ChainId.mainnet) {
+      const proposalId = await createCalldataProposal({
+        calldata: argv.calldata,
+        provider: fork.provider,
+      });
+      await passAndExecuteProposal({
+        proposalId: proposalId,
+        provider: fork.provider,
+      });
+    }
   } else if (argv.payloadAddress) {
     if (Number(argv.networkId) === ChainId.mainnet) {
       const proposalId = await createProposal({
