@@ -83,6 +83,8 @@ export async function createFork({
   if (blockNumber) (forkingPoint as any).block_number = Number(blockNumber);
   if (alias) (forkingPoint as any).alias = alias;
 
+  console.log(`Creating fork on ${projectUrl}/fork`)
+
   // create the specified fork programmatically
   const forkResponse = await axiosOnTenderly.post(
     `${projectUrl}/fork`,
